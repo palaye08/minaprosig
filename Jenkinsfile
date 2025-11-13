@@ -7,7 +7,7 @@ pipeline {
         GITHUB_TOKEN = credentials('github-token')
         RENDER_API_KEY = credentials('render-api-key')
         RENDER_APP_URL = credentials('render-app-url')
-        IMAGE_NAME = "${DOCKER_REGISTRY}/${DOCKER_CREDENTIALS_USR}/projet-sport"
+        // IMAGE_NAME = "${DOCKER_REGISTRY}/${DOCKER_CREDENTIALS_USR}/projet-sport"
         IMAGE_TAG = "latest"
         RENDER_SERVICE_ID = "srv-d3mp297diees739ve7m0"
     }
