@@ -1,19 +1,40 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Servir les fichiers statiques du dossier dist
-app.use(express.static(path.join(__dirname, 'dist/minaprosig/browser')));
+// Détecter automatiquement le chemin du build
+function getDistPath() {
+  const possiblePaths = [
+    path.join(__dirname, 'dist/minaprosig/browser'),
+    path.join(__dirname, 'dist/minaprosig'),
+    path.join(__dirname, 'dist/browser'),
+  ];
 
-// Rediriger toutes les routes vers index.html (pour Angular routing)
-// Utiliser '*' au lieu de '/*'
+  for (const distPath of possiblePaths) {
+    if (fs.existsSync(distPath)) {
+      console.log(`📁 Dossier dist trouvé: ${distPath}`);
+      return distPath;
+    }
+  }
+
+  console.error('❌ Aucun dossier dist trouvé!');
+  process.exit(1);
+}
+
+const distPath = getDistPath();
+
+// Servir les fichiers statiques
+app.use(express.static(distPath));
+
+// Rediriger toutes les routes vers index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/minaprosig/browser/index.html'));
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Serveur démarré sur le port ${PORT}`);
-  console.log(`🌐 Application disponible sur http://localhost:${PORT}`);
+  console.log(`🌐 Application disponible`);
 });
