@@ -1,126 +1,233 @@
-<div class="min-h-screen bg-gradient-to-b from-background to-muted/20">
-  <!-- Header / Navigation -->
-  <header class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-    <div class="container flex h-16 items-center justify-between">
-      <div class="flex items-center gap-2">
-        <img [src]="appLogo" alt="MinaPro" class="h-10 w-10 object-contain" />
-        <span class="font-semibold text-lg">MinaPro</span>
-        <span class="ml-2 inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
-          Outil Interne
-        </span>
-      </div>
-      <nav class="flex items-center gap-6">
-        <button *ngIf="isAuthenticated; else loginButton" 
-                routerLink="/dashboard"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-          Accéder au système
-        </button>
-        <ng-template #loginButton>
-          <button routerLink="/login"
-                  class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-            Se connecter
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+  
+  <!-- Header / Navigation avec effet glassmorphism -->
+  <header class="fixed top-0 left-0 right-0 z-50 border-b bg-white/80 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 shadow-sm">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 sm:h-20 items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 group cursor-pointer">
+          <div class="relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
+            <img [src]="appLogo" alt="MinaPro" class="relative h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-xl" />
+          </div>
+          <div>
+            <span class="font-bold text-xl sm:text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ appTitle }}</span>
+            <span class="hidden sm:inline-flex ml-3 items-center rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 px-3 py-1 text-xs font-semibold text-blue-600 border border-blue-200/50">
+              Outil Professionnel
+            </span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex items-center gap-2 sm:gap-4">
+          <button (click)="scrollToSection('fonctionnalites')" 
+                  class="hidden md:inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-blue-50">
+            Fonctionnalités
           </button>
-        </ng-template>
-      </nav>
+          <button (click)="scrollToSection('impact')" 
+                  class="hidden md:inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-blue-50">
+            Impact
+          </button>
+          
+          <button *ngIf="isAuthenticated; else loginButton" 
+                  routerLink="/dashboard"
+                  class="inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-10 sm:h-11 px-4 sm:px-6 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105">
+            <span class="hidden sm:inline">Accéder au système</span>
+            <span class="sm:hidden">Dashboard</span>
+          </button>
+          <ng-template #loginButton>
+            <button (click)="navigateToLogin()" 
+                    class="inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-10 sm:h-11 px-4 sm:px-6 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105">
+              Se connecter
+            </button>
+          </ng-template>
+        </nav>
+      </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="container py-20 md:py-32">
-    <div class="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
-      <div class="space-y-6">
-        <span class="inline-flex items-center rounded-md border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary w-fit">
-          Plateforme propriétaire MinaPro
-        </span>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-          Votre avantage concurrentiel
-          <span class="block text-primary mt-2">dans l'accompagnement</span>
-        </h1>
-        <p class="text-xl text-muted-foreground max-w-2xl">
-          Un système d'information propriétaire développé par MinaPro pour maximiser l'impact de nos programmes d'incubation et offrir un niveau de service inégalé à nos bénéficiaires.
-        </p>
-        <div class="flex flex-wrap gap-4">
-          <button *ngIf="isAuthenticated; else heroLoginButton"
-                  routerLink="/dashboard"
-                  class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
-            Accéder au système
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
-              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-            </svg>
-          </button>
-          <ng-template #heroLoginButton>
-            <button routerLink="/login"
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
-              Se connecter
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
+  <!-- Hero Section avec animations -->
+  <section class="relative pt-32 sm:pt-40 pb-20 sm:pb-32 overflow-hidden">
+    <!-- Fond animé -->
+    <div class="absolute inset-0 -z-10">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+        <!-- Contenu texte -->
+        <div class="space-y-8" [@fadeInUp]>
+          <div class="inline-flex items-center gap-2 rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-2 shadow-sm">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
+            <span class="text-sm font-semibold text-blue-600">Plateforme propriétaire MinaPro</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
+            Votre avantage
+            <span class="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-2">
+              concurrentiel
+            </span>
+            <span class="block text-gray-800 mt-2">en accompagnement</span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-gray-600 max-w-2xl leading-relaxed">
+            Un système d'information propriétaire développé par MinaPro pour 
+            <span class="font-semibold text-gray-900">maximiser l'impact</span> de vos programmes d'incubation 
+            et offrir un niveau de service <span class="font-semibold text-gray-900">inégalé</span> à vos bénéficiaires.
+          </p>
+
+          <div class="flex flex-col sm:flex-row flex-wrap gap-4">
+            <button *ngIf="isAuthenticated; else heroLoginButton"
+                    routerLink="/dashboard"
+                    class="group inline-flex items-center justify-center rounded-xl text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-14 px-8 shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105">
+              Accéder au système
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 group-hover:translate-x-1 transition-transform">
                 <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
               </svg>
             </button>
-          </ng-template>
-        </div>
-      </div>
-      <div class="relative">
-        <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-purple-500/20 blur-3xl -z-10"></div>
-        <img src="/dashboard-preview-xof.png" alt="Tableau de bord SIG" class="rounded-lg shadow-2xl border" />
-      </div>
-    </div>
-  </section>
-
-  <!-- Avantage stratégique -->
-  <section class="bg-primary/5 py-20 border-y">
-    <div class="container">
-      <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
-        <h2 class="text-3xl font-bold sm:text-4xl">Notre différenciation sur le marché</h2>
-        <p class="text-xl text-muted-foreground">
-          Alors que nos concurrents utilisent des outils génériques (Excel, Google Forms, outils tiers), MinaPro dispose d'une plateforme propriétaire qui transforme notre capacité opérationnelle en avantage compétitif durable.
-        </p>
-      </div>
-
-      <div class="grid gap-8 md:grid-cols-3">
-        <div *ngFor="let advantage of advantages" class="rounded-lg border border-primary/20 bg-card text-card-foreground shadow-sm">
-          <div class="flex flex-col space-y-1.5 p-6">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="p-2 rounded-lg bg-primary/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            <ng-template #heroLoginButton>
+              <button routerLink="/login"
+                      class="group inline-flex items-center justify-center rounded-xl text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-14 px-8 shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-105">
+                Commencer maintenant
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 group-hover:translate-x-1 transition-transform">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
                 </svg>
-              </div>
+              </button>
+            </ng-template>
+            
+            <button (click)="scrollToSection('fonctionnalites')"
+                    class="inline-flex items-center justify-center rounded-xl text-base font-semibold border-2 border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 h-14 px-8 transition-all duration-300">
+              Découvrir les fonctionnalités
+            </button>
+          </div>
+
+          <!-- Stats rapides -->
+          <div class="grid grid-cols-3 gap-6 pt-8 border-t border-gray-200">
+            <div>
+              <div class="text-3xl font-bold text-blue-600">500+</div>
+              <div class="text-sm text-gray-600 mt-1">Bénéficiaires</div>
             </div>
-            <h3 class="text-2xl font-semibold leading-none tracking-tight">{{ advantage.title }}</h3>
-            <p class="text-sm text-muted-foreground mt-2">{{ advantage.description }}</p>
+            <div>
+              <div class="text-3xl font-bold text-purple-600">70%</div>
+              <div class="text-sm text-gray-600 mt-1">Gain temps</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-pink-600">24/7</div>
+              <div class="text-sm text-gray-600 mt-1">Disponible</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image dashboard avec effet 3D -->
+        <div class="relative lg:mt-0" [@fadeInUp]>
+          <div class="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 blur-3xl -z-10 rounded-3xl transform rotate-3"></div>
+          <div class="relative rounded-2xl shadow-2xl border-4 border-white overflow-hidden transform hover:scale-105 transition-transform duration-500">
+            <img src="/dashboard-preview-xof.png" alt="Tableau de bord SIG" class="w-full h-auto" />
+            <!-- Overlay avec effet glassmorphism -->
+            <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
+          </div>
+          
+          <!-- Badges flottants -->
+          <div class="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl p-4 transform rotate-3 hover:rotate-0 transition-transform">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+              <span class="text-sm font-semibold text-gray-700">En ligne</span>
+            </div>
+          </div>
+          
+          <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-4 transform -rotate-3 hover:rotate-0 transition-transform">
+            <div class="text-2xl font-bold text-blue-600">+250</div>
+            <div class="text-xs text-gray-600">Nouvelles données</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Capacités exclusives -->
-  <section id="fonctionnalites" class="py-20">
-    <div class="container">
+  <!-- Section Avantages Stratégiques -->
+  <section class="py-20 sm:py-32 bg-gradient-to-br from-blue-600 to-purple-600 text-white relative overflow-hidden">
+    <!-- Motif de fond -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl mx-auto text-center space-y-6 mb-16">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold">
+          Notre différenciation sur le marché
+        </h2>
+        <p class="text-lg sm:text-xl text-blue-100 leading-relaxed">
+          Alors que nos concurrents utilisent des outils génériques (Excel, Google Forms, outils tiers), 
+          <span class="font-semibold text-white">MinaPro dispose d'une plateforme propriétaire</span> 
+          qui transforme notre capacité opérationnelle en avantage compétitif durable.
+        </p>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-3" [@staggerFade]>
+        <div *ngFor="let advantage of advantages" 
+             class="group relative rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+          <!-- Icône avec gradient -->
+          <div class="mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm group-hover:scale-110 transition-transform">
+              <div class="w-8 h-8 bg-gradient-to-br {{ advantage.color }} rounded-lg"></div>
+            </div>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4">{{ advantage.title }}</h3>
+          <p class="text-blue-100 leading-relaxed">{{ advantage.description }}</p>
+          
+          <!-- Effet de brillance au survol -->
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] duration-1000"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Fonctionnalités -->
+  <section id="fonctionnalites" class="py-20 sm:py-32">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold sm:text-4xl mb-4">Capacités propriétaires</h2>
-        <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Des fonctionnalités développées spécifiquement pour nos besoins, impossibles à obtenir avec des solutions du marché
+        <div class="inline-block">
+          <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Capacités</span>
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mt-2 mb-4">
+            Fonctionnalités <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">propriétaires</span>
+          </h2>
+        </div>
+        <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+          Des outils développés spécifiquement pour vos besoins, impossibles à obtenir avec des solutions du marché
         </p>
       </div>
 
-      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <div *ngFor="let feature of features" class="rounded-lg border bg-card text-card-foreground shadow-sm">
-          <div class="flex flex-col space-y-1.5 p-6">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="p-2 rounded-lg bg-primary/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" [@staggerFade]>
+        <div *ngFor="let feature of features" 
+             class="group rounded-2xl border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-xl transition-all duration-300 overflow-hidden">
+          <!-- En-tête coloré -->
+          <div class="h-2 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+          
+          <div class="p-6 sm:p-8">
+            <!-- Icône et titre -->
+            <div class="flex items-start gap-4 mb-4">
+              <div class="flex-shrink-0 w-12 h-12 rounded-xl {{ feature.color }} flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 </svg>
               </div>
-              <h3 class="text-lg font-semibold leading-none tracking-tight">{{ feature.title }}</h3>
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ feature.title }}</h3>
+                <p class="text-sm text-gray-600">{{ feature.description }}</p>
+              </div>
             </div>
-          </div>
-          <div class="p-6 pt-0">
-            <ul class="space-y-2 text-sm text-muted-foreground">
-              <li *ngFor="let item of feature.items" class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary mt-0.5 flex-shrink-0">
-                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/>
+
+            <!-- Liste des items -->
+            <ul class="space-y-3 mt-6">
+              <li *ngFor="let item of feature.items" class="flex items-start gap-3 text-sm text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 text-green-500 mt-0.5">
+                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                  <path d="m9 12 2 2 4-4"/>
                 </svg>
                 <span>{{ item }}</span>
               </li>
@@ -131,72 +238,166 @@
     </div>
   </section>
 
-  <!-- Impact mesurable -->
-  <section class="bg-muted/50 py-20">
-    <div class="container">
+  <!-- Section Impact avec compteurs animés -->
+  <section id="impact" class="py-20 sm:py-32 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+    <!-- Motif décoratif -->
+    <div class="absolute inset-0 opacity-5">
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold sm:text-4xl mb-4">Impact mesurable sur nos opérations</h2>
-        <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Résultats</span>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mt-2 mb-4">
+          Impact <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">mesurable</span>
+        </h2>
+        <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
           Des résultats concrets qui renforcent notre position de leader
         </p>
       </div>
 
-      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        <div *ngFor="let stat of stats" class="rounded-lg border bg-card text-card-foreground shadow-sm">
-          <div class="flex flex-col space-y-1.5 p-6 text-center">
-            <div class="text-4xl font-bold text-primary mb-2">{{ stat.value }}</div>
-            <h3 class="text-lg font-semibold leading-none tracking-tight">{{ stat.title }}</h3>
-            <p class="text-sm text-muted-foreground mt-2">{{ stat.description }}</p>
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4" [@staggerFade]>
+        <div *ngFor="let stat of stats; let i = index" 
+             class="group relative rounded-2xl bg-white border-2 border-gray-200 p-8 hover:border-blue-300 hover:shadow-xl transition-all duration-300 text-center overflow-hidden">
+          <!-- Icône de fond décorative -->
+          <div class="absolute top-4 right-4 text-gray-100 opacity-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
           </div>
+
+          <div class="relative z-10">
+            <div class="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              {{ animatedStats[i].value }}{{ animatedStats[i].suffix }}
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-3">{{ stat.title }}</h3>
+            <p class="text-sm text-gray-600 leading-relaxed">{{ stat.description }}</p>
+          </div>
+
+          <!-- Barre décorative -->
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Témoignages -->
+  <section class="py-20 sm:py-32 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Témoignages</span>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mt-2 mb-4">
+          Ils utilisent <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MinaPro</span>
+        </h2>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-3" [@staggerFade]>
+        <div *ngFor="let testimonial of testimonials" 
+             class="rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-100 p-8 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-3xl">
+              {{ testimonial.avatar }}
+            </div>
+            <div>
+              <div class="font-bold text-gray-900">{{ testimonial.author }}</div>
+              <div class="text-sm text-gray-600">{{ testimonial.role }}</div>
+            </div>
+          </div>
+          <p class="text-gray-700 leading-relaxed italic">"{{ testimonial.text }}"</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA Final -->
-  <section class="py-20">
-    <div class="container">
-      <div class="rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-purple-500/10 text-card-foreground shadow-sm">
-        <div class="p-12 text-center">
-          <h2 class="text-3xl font-bold mb-4">Prêt à exploiter tout le potentiel de notre plateforme ?</h2>
-          <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Connectez-vous dès maintenant pour accéder à tous les outils qui font de MinaPro un acteur incontournable de l'écosystème entrepreneurial.
-          </p>
+  <section class="py-20 sm:py-32 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+    <!-- Animations de fond -->
+    <div class="absolute inset-0">
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-4xl mx-auto text-center space-y-8">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
+          Prêt à exploiter tout le potentiel de notre plateforme ?
+        </h2>
+        <p class="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+          Connectez-vous dès maintenant pour accéder à tous les outils qui font de MinaPro 
+          un acteur incontournable de l'écosystème entrepreneurial.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
           <button *ngIf="isAuthenticated; else ctaLoginButton"
                   routerLink="/dashboard"
-                  class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
+                  class="group inline-flex items-center justify-center rounded-xl text-base font-semibold bg-white text-blue-600 hover:bg-gray-100 h-14 px-8 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
             Accéder au système
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 group-hover:translate-x-1 transition-transform">
               <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
             </svg>
           </button>
           <ng-template #ctaLoginButton>
             <button routerLink="/login"
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8">
-              Se connecter
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
+                    class="group inline-flex items-center justify-center rounded-xl text-base font-semibold bg-white text-blue-600 hover:bg-gray-100 h-14 px-8 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105">
+              Commencer gratuitement
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 group-hover:translate-x-1 transition-transform">
                 <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
               </svg>
             </button>
           </ng-template>
+          
+          <button (click)="scrollToSection('fonctionnalites')"
+                  class="inline-flex items-center justify-center rounded-xl text-base font-semibold border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm h-14 px-8 transition-all duration-300">
+            En savoir plus
+          </button>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="pt-12 flex flex-wrap justify-center items-center gap-8 opacity-80">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="text-sm font-medium">100% Sécurisé</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <span class="text-sm font-medium">Données FCFA</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <span class="text-sm font-medium">Support 24/7</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="border-t py-12 bg-muted/30">
-    <div class="container">
-      <div class="grid gap-8 md:grid-cols-3">
+   <!-- Footer moderne -->
+   <footer class="bg-gray-600 text-gray-300 py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-4 mb-12">
+        <!-- À propos -->
         <div>
-          <div class="flex items-center gap-2 mb-4">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-              SIG
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center font-bold text-white">
+              MP
             </div>
-            <span class="font-semibold text-lg">MinaPro</span>
+            <span class="font-bold text-xl text-white">{{ appTitle }}</span>
           </div>
-          <p class="text-sm text-muted-foreground">
-            Plateforme propriétaire de gestion pour incubateurs et structures d'accompagnement entrepreneurial.
+          <p class="text-sm leading-relaxed">
+            Plateforme propriétaire de gestion pour incubateurs et structures d'accompagnement entrepreneurial en Afrique.
           </p>
         </div>
         
