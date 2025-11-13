@@ -6,29 +6,29 @@ WORKDIR /app
 # Copier les fichiers de configuration
 COPY package*.json ./
 
-# Installer les dépendances
+# Installer TOUTES les dépendances (y compris express)
 RUN npm ci
 
 # Copier le code source
 COPY . .
 
 # Construire l'application Angular en mode production
-RUN npm run build
+# Désactiver l'optimisation des fonts pour éviter les erreurs réseau
+RUN npm run build -- --configuration production
 
 # Stage 2: Runtime
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Installer Express
-RUN npm install express
-
-# Copier les fichiers nécessaires depuis l'étape de build
-COPY --from=builder /app/dist ./dist
+# Copier package.json depuis le builder
 COPY --from=builder /app/package*.json ./
 
-# Installer les dépendances de production uniquement
+# Installer les dépendances de production (y compris express)
 RUN npm ci --only=production
+
+# Copier les fichiers buildés
+COPY --from=builder /app/dist ./dist
 
 # Copier le fichier server.js
 COPY server.js ./
