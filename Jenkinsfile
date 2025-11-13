@@ -9,7 +9,7 @@ pipeline {
         RENDER_APP_URL = credentials('render-app-url')
         IMAGE_NAME = "${DOCKER_REGISTRY}/${DOCKER_CREDENTIALS_USR}/minaprosig"
         IMAGE_TAG = "latest"
-        RENDER_SERVICE_ID = "srv-d3mp297diees739ve7m0"
+        RENDER_SERVICE_ID = "srv-d4b6s7ili9vc73d9f2kg"
     }
 
     stages {
