@@ -8,11 +8,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'dist/minaprosig/browser')));
 
 // Rediriger toutes les routes vers index.html (pour Angular routing)
-app.get('/*', (req, res) => {
+// Utiliser '*' au lieu de '/*'
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/minaprosig/browser/index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Serveur démarré sur le port ${PORT}`);
   console.log(`🌐 Application disponible sur http://localhost:${PORT}`);
 });
