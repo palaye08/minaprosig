@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Porfolio": {
+    "minaprosig": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/porfolio",
+            "outputPath": "dist/minaprosig",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -26,9 +26,9 @@
                 "input": "public"
               }
             ],
-        "styles": [
-  "src/styles.css"
-],
+            "styles": [
+              "src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -59,10 +59,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Porfolio:build:production"
+              "buildTarget": "minaprosig:build:production"
             },
             "development": {
-              "buildTarget": "Porfolio:build:development"
+              "buildTarget": "minaprosig:build:development"
             }
           },
           "defaultConfiguration": "development"
