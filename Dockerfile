@@ -6,13 +6,17 @@ WORKDIR /app
 # Copier les fichiers de configuration
 COPY package*.json ./
 
-# Installer les dépendances
-RUN npm ci
+# Installer avec retry pour éviter les timeouts
+RUN npm config set fetch-timeout 600000 && \
+    npm config set fetch-retry-maxtimeout 600000 && \
+    npm install --legacy-peer-deps || \
+    npm install --legacy-peer-deps || \
+    npm install --legacy-peer-deps
 
 # Copier le code source
 COPY . .
 
-# Construire l'application Angular en mode production
+# Construire l'application
 RUN npm run build
 
 # Stage 2: Runtime
@@ -20,17 +24,13 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Installer Express
-RUN npm install express
+# Installer Express version 4.18.2 (version stable testée)
+RUN npm install express@4.18.2
 
-# Copier les fichiers nécessaires depuis l'étape de build
+# Copier les fichiers buildés
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
 
-# Installer les dépendances de production uniquement
-RUN npm ci --only=production
-
-# Copier le fichier server.js
+# Copier server.js
 COPY server.js ./
 
 EXPOSE 3000
