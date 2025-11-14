@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 3000;
 // Détecter automatiquement le chemin du build
 function getDistPath() {
   const possiblePaths = [
-    path.join(__dirname, 'dist/minaprosig/browser'),
-    path.join(__dirname, 'dist/minaprosig'),
+    path.join(__dirname, 'dist/porfolio/browser'),
+    path.join(__dirname, 'dist/porfolio'),
     path.join(__dirname, 'dist/browser'),
   ];
 
