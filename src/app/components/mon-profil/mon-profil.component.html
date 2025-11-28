@@ -1,0 +1,229 @@
+<div class="space-y-6">
+  
+    <!-- Header with Edit Button -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Mon Profil</h1>
+        <p class="text-gray-600 mt-1">Gérez vos informations personnelles et professionnelles</p>
+      </div>
+      <button 
+        *ngIf="!editMode"
+        (click)="toggleEditMode()"
+        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+        <span>✏️</span> Modifier
+      </button>
+      <div *ngIf="editMode" class="flex gap-3">
+        <button 
+          (click)="cancelEdit()"
+          class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+          Annuler
+        </button>
+        <button 
+          (click)="saveProfile()"
+          class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          💾 Sauvegarder
+        </button>
+      </div>
+    </div>
+  
+    <!-- Profile Card with Photo -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="h-32 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"></div>
+      <div class="px-8 pb-8">
+        <div class="flex flex-col md:flex-row items-start md:items-end gap-6 -mt-16">
+          <div class="relative">
+            <div class="w-32 h-32 rounded-2xl bg-white shadow-xl flex items-center justify-center text-6xl border-4 border-white">
+              {{ profileData.avatar }}
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 border-4 border-white rounded-full"></div>
+          </div>
+          <div class="flex-1">
+            <h2 class="text-3xl font-bold text-gray-900">{{ profileData.prenom }} {{ profileData.nom }}</h2>
+            <p class="text-gray-600 mt-1">{{ profileData.situationProfessionnelle }}</p>
+            <div class="flex flex-wrap gap-3 mt-3">
+              <span [class]="getStatusColor()" class="px-4 py-2 rounded-full text-sm font-semibold">
+                {{ profileData.statut }}
+              </span>
+              <span class="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">
+                ID: {{ profileData.id }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Personal Information -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>👤</span> Informations personnelles
+        </h3>
+      </div>
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Genre</label>
+            <input 
+              type="text" 
+              [(ngModel)]="profileData.genre"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Date de naissance</label>
+            <input 
+              type="date" 
+              [(ngModel)]="profileData.dateNaissance"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Téléphone principal</label>
+            <input 
+              type="tel" 
+              [(ngModel)]="profileData.telephone"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Téléphone secondaire</label>
+            <input 
+              type="tel" 
+              [(ngModel)]="profileData.telephoneSecondaire"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Email</label>
+            <input 
+              type="email" 
+              [(ngModel)]="profileData.email"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Niveau d'éducation</label>
+            <input 
+              type="text" 
+              [(ngModel)]="profileData.niveauEducation"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Adresse</label>
+            <input 
+              type="text" 
+              [(ngModel)]="profileData.adresse"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Ville</label>
+            <input 
+              type="text" 
+              [(ngModel)]="profileData.ville"
+              [disabled]="!editMode"
+              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Program Information -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>📋</span> Informations du programme
+        </h3>
+      </div>
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Programme</label>
+            <div class="px-4 py-3 rounded-xl bg-blue-50 text-blue-900 font-medium">
+              {{ profileData.programme }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Bailleur</label>
+            <div class="px-4 py-3 rounded-xl bg-purple-50 text-purple-900 font-medium">
+              {{ profileData.bailleur }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Date d'enrôlement</label>
+            <div class="px-4 py-3 rounded-xl bg-pink-50 text-pink-900 font-medium">
+              {{ profileData.dateEnrolement | date: 'dd/MM/yyyy' }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Coach assigné</label>
+            <div class="px-4 py-3 rounded-xl bg-green-50 text-green-900 font-medium flex items-center gap-2">
+              <span>👨‍🏫</span> {{ profileData.coachAssigne }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Business Information -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-green-50 to-teal-50 border-b border-gray-200">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>🏢</span> Mon Entreprise
+        </h3>
+      </div>
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Nom de l'entreprise</label>
+            <div class="px-4 py-3 rounded-xl bg-gradient-to-r from-green-50 to-teal-50 text-gray-900 font-bold text-lg">
+              {{ entrepriseData.nom }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Année de création</label>
+            <div class="px-4 py-3 rounded-xl bg-gray-50 text-gray-900 font-medium">
+              {{ entrepriseData.anneeCreation }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Secteur d'activité</label>
+            <div class="px-4 py-3 rounded-xl bg-blue-50 text-blue-900 font-medium">
+              {{ entrepriseData.secteur }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Statut juridique</label>
+            <div class="px-4 py-3 rounded-xl bg-purple-50 text-purple-900 font-medium">
+              {{ entrepriseData.statutJuridique }}
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block">Niveau d'avancement</label>
+            <div class="px-4 py-3 rounded-xl bg-green-50 text-green-900 font-medium">
+              {{ entrepriseData.niveauAvancement }}
+            </div>
+          </div>
+        </div>
+  
+        <!-- Financial Indicators -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+            <div class="text-sm opacity-90 mb-2">Chiffre d'affaires</div>
+            <div class="text-3xl font-bold">{{ formatCurrency(entrepriseData.chiffreAffairesActuel) }}</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-white">
+            <div class="text-sm opacity-90 mb-2">Dépenses</div>
+            <div class="text-3xl font-bold">{{ formatCurrency(entrepriseData.depensesActuelles) }}</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 text-white">
+            <div class="text-sm opacity-90 mb-2">Marge</div>
+            <div class="text-3xl font-bold">{{ entrepriseData.margeActuelle }}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

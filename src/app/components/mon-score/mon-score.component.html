@@ -1,0 +1,158 @@
+<div class="space-y-6">
+  
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Mon Score</h1>
+      <p class="text-gray-600 mt-1">Suivez votre évaluation et vos performances</p>
+    </div>
+  
+    <!-- Score Global Card -->
+    <div [class]="'bg-gradient-to-br ' + getGlobalScoreColor() + ' rounded-3xl p-12 text-white shadow-2xl'">
+      <div class="text-center">
+        <div class="mb-4">
+          <span class="text-2xl font-semibold opacity-90">Score Global</span>
+        </div>
+        <div class="flex items-center justify-center gap-4 mb-6">
+          <div class="text-8xl font-bold">{{ scoreGlobal }}</div>
+          <div class="text-4xl font-bold opacity-75">/ {{ maxScore }}</div>
+        </div>
+        <div class="max-w-md mx-auto">
+          <div class="w-full bg-white/30 rounded-full h-4 mb-4">
+            <div 
+              class="bg-white h-4 rounded-full transition-all duration-1000"
+              [style.width.%]="getScorePercentage(scoreGlobal, maxScore)">
+            </div>
+          </div>
+          <p class="text-white/90 text-lg">
+            {{ getScorePercentage(scoreGlobal, maxScore) }}% de performance globale
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Critères d'évaluation -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>📊</span> Critères d'évaluation
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="space-y-6">
+          <div 
+            *ngFor="let critere of criteres"
+            class="p-6 rounded-2xl bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-gray-100 hover:shadow-lg transition-all">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-3xl shadow-lg">
+                {{ critere.icon }}
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="text-lg font-bold text-gray-900">{{ critere.nom }}</h3>
+                  <span class="text-2xl font-bold text-blue-600">{{ critere.score }}/{{ critere.maxScore }}</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">{{ critere.description }}</p>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    [class]="getScoreColor(critere.score, critere.maxScore) + ' h-3 rounded-full transition-all duration-500'"
+                    [style.width.%]="getScorePercentage(critere.score, critere.maxScore)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Analysis Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Points Forts -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span>💪</span> Points forts
+          </h3>
+        </div>
+        <div class="p-6">
+          <ul class="space-y-3">
+            <li 
+              *ngFor="let point of pointsForts"
+              class="flex items-start gap-3 text-sm">
+              <span class="text-green-600 text-lg flex-shrink-0">✓</span>
+              <span class="text-gray-700">{{ point }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Points à Améliorer -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span>🎯</span> À améliorer
+          </h3>
+        </div>
+        <div class="p-6">
+          <ul class="space-y-3">
+            <li 
+              *ngFor="let point of pointsAmeliorer"
+              class="flex items-start gap-3 text-sm">
+              <span class="text-amber-600 text-lg flex-shrink-0">!</span>
+              <span class="text-gray-700">{{ point }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Recommandations -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span>💡</span> Recommandations
+          </h3>
+        </div>
+        <div class="p-6">
+          <ul class="space-y-3">
+            <li 
+              *ngFor="let reco of recommandations"
+              class="flex items-start gap-3 text-sm">
+              <span class="text-purple-600 text-lg flex-shrink-0">→</span>
+              <span class="text-gray-700">{{ reco }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Historique des scores -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>📈</span> Historique des évaluations
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div 
+            *ngFor="let eval of historique"
+            class="flex items-start gap-6 p-6 rounded-2xl bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-gray-100 hover:shadow-lg transition-all">
+            <div class="flex-shrink-0 w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+              <div class="text-center">
+                <div class="text-3xl font-bold">{{ eval.score }}</div>
+                <div class="text-xs">/10</div>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-bold text-gray-900">{{ eval.date | date: 'dd MMMM yyyy' }}</h3>
+                <span class="text-sm text-gray-600">Par {{ eval.auteur }}</span>
+              </div>
+              <p class="text-gray-700">{{ eval.commentaire }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

@@ -1,0 +1,91 @@
+<header class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-6 py-4">
+      
+      <!-- Left: Menu Toggle & Date -->
+      <div class="flex items-center gap-6">
+        <button 
+          (click)="onToggleSidebar()"
+          class="p-2 rounded-xl hover:bg-blue-50 transition-colors text-gray-600 hover:text-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+  
+        <div class="hidden md:flex items-center gap-2 text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span class="text-sm font-medium">
+            {{ currentDate | date: 'EEEE d MMMM yyyy' }}
+          </span>
+        </div>
+      </div>
+  
+      <!-- Right: Search, Notifications, Profile -->
+      <div class="flex items-center gap-4">
+        
+        <!-- Search Bar -->
+        <div class="hidden lg:flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-2 w-80">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Rechercher..." 
+            class="bg-transparent border-none outline-none text-sm flex-1 text-gray-700 placeholder-gray-400" />
+        </div>
+  
+        <!-- Notifications -->
+        <div class="relative">
+          <button 
+            (click)="toggleNotifications()"
+            class="relative p-2 rounded-xl hover:bg-blue-50 transition-colors text-gray-600 hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span 
+              *ngIf="unreadCount > 0"
+              class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+              {{ unreadCount }}
+            </span>
+          </button>
+  
+          <!-- Notifications Dropdown -->
+          <div 
+            *ngIf="showNotifications"
+            class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+              <h3 class="font-bold text-gray-900">Notifications</h3>
+              <p class="text-sm text-gray-600">Vous avez {{ unreadCount }} nouvelles notifications</p>
+            </div>
+            <div class="max-h-96 overflow-y-auto">
+              <div 
+                *ngFor="let notif of notifications"
+                [class]="notif.unread ? 'bg-blue-50' : 'bg-white'"
+                class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-start gap-3">
+                  <div [class]="notif.unread ? 'bg-blue-500' : 'bg-gray-300'" class="w-2 h-2 rounded-full mt-2"></div>
+                  <div class="flex-1">
+                    <p class="text-sm text-gray-900 font-medium">{{ notif.text }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ notif.time }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-3 bg-gray-50 text-center">
+              <button class="text-sm font-medium text-blue-600 hover:text-blue-700">
+                Voir toutes les notifications
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Quick Actions -->
+        <button class="p-2 rounded-xl hover:bg-blue-50 transition-colors text-gray-600 hover:text-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>

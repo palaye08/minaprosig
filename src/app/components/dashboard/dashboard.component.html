@@ -1,0 +1,137 @@
+<div class="space-y-6">
+  
+    <!-- Welcome Section -->
+    <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white shadow-xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">Bonjour {{ userName }} ! 👋</h1>
+          <p class="text-blue-100 text-lg">Bienvenue sur votre tableau de bord</p>
+        </div>
+        <div class="hidden md:block">
+          <div class="text-right">
+            <div class="text-4xl font-bold">{{ quickStats[3].value }}</div>
+            <div class="text-sm text-blue-100">Votre score actuel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div 
+        *ngFor="let stat of quickStats"
+        class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+        <div class="flex items-start justify-between mb-4">
+          <div [class]="'w-12 h-12 rounded-xl bg-gradient-to-br ' + stat.color + ' flex items-center justify-center text-2xl shadow-lg'">
+            {{ stat.icon }}
+          </div>
+          <span 
+            [class]="stat.positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'"
+            class="text-xs font-semibold px-3 py-1 rounded-full">
+            {{ stat.change }}
+          </span>
+        </div>
+        <div class="text-3xl font-bold text-gray-900 mb-1">{{ stat.value }}</div>
+        <div class="text-sm text-gray-600">{{ stat.label }}</div>
+      </div>
+    </div>
+  
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Upcoming Activities -->
+      <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold text-gray-900">Activités à venir</h2>
+              <p class="text-sm text-gray-600 mt-1">Vos prochains rendez-vous</p>
+            </div>
+            <button class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+              Voir tout →
+            </button>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div 
+              *ngFor="let activity of upcomingActivities"
+              class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 hover:shadow-md transition-all duration-300 border border-gray-100">
+              <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                {{ activity.date.split('-')[2] }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 truncate">{{ activity.title }}</h3>
+                <p class="text-sm text-gray-600">{{ activity.type }} • {{ activity.date | date: 'dd/MM/yyyy' }}</p>
+              </div>
+              <span [class]="getStatusColor(activity.status)" class="px-3 py-1 rounded-full text-xs font-semibold">
+                {{ activity.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Active Objectives -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+          <h2 class="text-xl font-bold text-gray-900">Objectifs actifs</h2>
+          <p class="text-sm text-gray-600 mt-1">{{ activeObjectives.length }} en cours</p>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div 
+              *ngFor="let objective of activeObjectives"
+              class="p-4 rounded-xl bg-gradient-to-r from-gray-50 to-purple-50 hover:shadow-md transition-all duration-300 border border-gray-100">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">{{ objective.title }}</h3>
+                  <p class="text-xs text-gray-600">{{ objective.category }}</p>
+                </div>
+                <span class="text-sm font-bold text-blue-600">{{ objective.progress }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  [class]="getProgressColor(objective.progress)"
+                  [style.width.%]="objective.progress"
+                  class="h-2 rounded-full transition-all duration-500">
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">📅 {{ objective.deadline | date: 'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Recent Documents -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Documents récents</h2>
+            <p class="text-sm text-gray-600 mt-1">Vos derniers fichiers</p>
+          </div>
+          <button class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+            Voir tout →
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div 
+            *ngFor="let doc of recentDocuments"
+            class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 hover:shadow-md transition-all duration-300 border border-gray-100 cursor-pointer">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+              {{ doc.type }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-semibold text-gray-900 text-sm truncate">{{ doc.name }}</h3>
+              <p class="text-xs text-gray-600">{{ doc.date | date: 'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

@@ -1,0 +1,210 @@
+<div class="space-y-6">
+  
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Mes Sessions de Coaching</h1>
+        <p class="text-gray-600 mt-1">Suivez vos séances d'accompagnement personnalisé</p>
+      </div>
+      <button class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>➕</span> Demander une session
+      </button>
+    </div>
+  
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+        <div class="text-blue-100">Total sessions</div>
+      </div>
+      <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.planifies }}</div>
+        <div class="text-amber-100">Planifiées</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.completes }}</div>
+        <div class="text-green-100">Complétées</div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.dureeTotal }}h</div>
+        <div class="text-purple-100">Temps total</div>
+      </div>
+    </div>
+  
+    <!-- Sessions Timeline -->
+    <div class="space-y-4">
+      <div 
+        *ngFor="let session of sessions"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+        
+        <!-- Session Header -->
+        <div class="p-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-b border-gray-200">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start gap-4 flex-1">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
+                <div class="text-center text-white">
+                  <div class="text-2xl font-bold">{{ session.date | date: 'dd' }}</div>
+                  <div class="text-xs">{{ session.date | date: 'MMM' }}</div>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span [class]="getStatusColor(session.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                    {{ session.statut }}
+                  </span>
+                  <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border-2 border-purple-200">
+                    {{ getModaliteIcon(session.modalite) }} {{ session.modalite }}
+                  </span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ session.objectif }}</h3>
+                <div class="flex items-center gap-4 text-sm text-gray-600">
+                  <span>⏰ {{ session.heureDebut }} - {{ session.heureFin }}</span>
+                  <span>👨‍🏫 {{ session.coach }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Session Preview -->
+        <div class="p-6">
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">Situation initiale:</h4>
+            <p class="text-gray-600">{{ session.situationInitiale }}</p>
+          </div>
+  
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">Thèmes abordés:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let theme of session.themesAbordes"
+                class="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                {{ theme }}
+              </span>
+            </div>
+          </div>
+  
+          <button 
+            (click)="viewSession(session)"
+            class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+            Voir le rapport complet
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Session Details Modal -->
+    <div 
+      *ngIf="selectedSession"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      (click)="closeDetails()">
+      <div 
+        class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        (click)="$event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-8 text-white">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-3xl font-bold mb-2">Rapport de Coaching</h2>
+              <p class="text-blue-100">{{ selectedSession.date | date: 'dd MMMM yyyy' }} • {{ selectedSession.heureDebut }} - {{ selectedSession.heureFin }}</p>
+            </div>
+            <button 
+              (click)="closeDetails()"
+              class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center text-2xl">
+              ✕
+            </button>
+          </div>
+        </div>
+  
+        <!-- Modal Content -->
+        <div class="p-8 space-y-6">
+          
+          <!-- Objectif -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>🎯</span> Objectif de la séance
+            </h3>
+            <p class="text-gray-700">{{ selectedSession.objectif }}</p>
+          </div>
+  
+          <!-- Situation Initiale -->
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>📋</span> Situation initiale
+            </h3>
+            <p class="text-gray-700">{{ selectedSession.situationInitiale }}</p>
+          </div>
+  
+          <!-- Thèmes Abordés -->
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>💡</span> Thèmes abordés
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div 
+                *ngFor="let theme of selectedSession.themesAbordes"
+                class="p-4 rounded-xl bg-blue-50 border-2 border-blue-100 text-blue-900 font-medium">
+                {{ theme }}
+              </div>
+            </div>
+          </div>
+  
+          <!-- Actions Bénéficiaire -->
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>✅</span> Actions à réaliser (Vous)
+            </h3>
+            <ul class="space-y-2">
+              <li 
+                *ngFor="let action of selectedSession.actionsbeneficiaire"
+                class="flex items-start gap-3 p-4 rounded-xl bg-green-50 border-2 border-green-100">
+                <span class="text-green-600 text-xl">→</span>
+                <span class="text-gray-700">{{ action }}</span>
+              </li>
+            </ul>
+          </div>
+  
+          <!-- Actions Coach -->
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>👨‍🏫</span> Actions du coach
+            </h3>
+            <ul class="space-y-2">
+              <li 
+                *ngFor="let action of selectedSession.actionsCoach"
+                class="flex items-start gap-3 p-4 rounded-xl bg-purple-50 border-2 border-purple-100">
+                <span class="text-purple-600 text-xl">→</span>
+                <span class="text-gray-700">{{ action }}</span>
+              </li>
+            </ul>
+          </div>
+  
+          <!-- Difficultés -->
+          <div *ngIf="selectedSession.difficultes.length > 0">
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>⚠️</span> Difficultés identifiées
+            </h3>
+            <ul class="space-y-2">
+              <li 
+                *ngFor="let difficulte of selectedSession.difficultes"
+                class="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border-2 border-amber-100">
+                <span class="text-amber-600 text-xl">!</span>
+                <span class="text-gray-700">{{ difficulte }}</span>
+              </li>
+            </ul>
+          </div>
+  
+          <!-- Prochaine Session -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <span>📅</span> Prochaine session
+            </h3>
+            <p class="text-gray-700 font-semibold">{{ selectedSession.prochaineSeason | date: 'dd MMMM yyyy' }}</p>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+  </div>

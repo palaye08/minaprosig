@@ -1,0 +1,94 @@
+<div class="space-y-6">
+  
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Mes Objectifs</h1>
+      <p class="text-gray-600 mt-1">Suivez vos objectifs et leur progression</p>
+    </div>
+  
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+        <div class="text-blue-100">Total objectifs</div>
+      </div>
+      <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.enCours }}</div>
+        <div class="text-amber-100">En cours</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.atteints }}</div>
+        <div class="text-green-100">Atteints</div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.progressMoyen }}%</div>
+        <div class="text-purple-100">Progrès moyen</div>
+      </div>
+    </div>
+  
+    <!-- Objectifs List -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div 
+        *ngFor="let objectif of objectifs"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all">
+        
+        <div [class]="'h-2 bg-gradient-to-r ' + getCategorieColor(objectif.categorie)"></div>
+        
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-3">
+                <span [class]="getStatutColor(objectif.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                  {{ objectif.statut }}
+                </span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                  {{ objectif.categorie }}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ objectif.titre }}</h3>
+              <p class="text-sm text-gray-600 mb-4">{{ objectif.description }}</p>
+            </div>
+          </div>
+  
+          <div class="space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-semibold text-gray-700">Progression</span>
+                <span class="text-sm font-bold text-blue-600">{{ objectif.progress }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  [class]="getProgressColor(objectif.progress) + ' h-3 rounded-full transition-all duration-500'"
+                  [style.width.%]="objectif.progress">
+                </div>
+              </div>
+            </div>
+  
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Date de début</div>
+                <div class="text-sm font-semibold text-gray-900">{{ objectif.dateDebut | date: 'dd/MM/yyyy' }}</div>
+              </div>
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Date cible</div>
+                <div class="text-sm font-semibold text-gray-900">{{ objectif.dateCible | date: 'dd/MM/yyyy' }}</div>
+              </div>
+            </div>
+  
+            <div *ngIf="objectif.commentaires.length > 0" class="pt-4 border-t border-gray-200">
+              <div class="text-sm font-semibold text-gray-700 mb-2">💬 Derniers commentaires</div>
+              <div class="space-y-2">
+                <div 
+                  *ngFor="let comment of objectif.commentaires.slice(-2)"
+                  class="p-3 rounded-xl bg-blue-50 text-sm">
+                  <div class="font-semibold text-blue-900">{{ comment.auteur }}</div>
+                  <div class="text-gray-700 mt-1">{{ comment.texte }}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{ comment.date | date: 'dd/MM/yyyy' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

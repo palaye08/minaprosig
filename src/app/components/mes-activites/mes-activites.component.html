@@ -1,0 +1,163 @@
+<div class="space-y-6">
+  
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Mes Activités</h1>
+      <p class="text-gray-600 mt-1">Suivez toutes vos formations, ateliers et événements</p>
+    </div>
+  
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+        <div class="text-blue-100">Total activités</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.confirme }}</div>
+        <div class="text-green-100">Confirmées</div>
+      </div>
+      <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.present }}</div>
+        <div class="text-emerald-100">Présences</div>
+      </div>
+      <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.inscrit }}</div>
+        <div class="text-amber-100">En attente</div>
+      </div>
+    </div>
+  
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <div class="flex flex-wrap gap-4 items-center">
+        <div class="flex-1 min-w-[200px]">
+          <label class="text-sm font-semibold text-gray-700 mb-2 block">Type d'activité</label>
+          <select 
+            [(ngModel)]="filterType"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors">
+            <option value="Tous">Tous les types</option>
+            <option value="Formation">Formation</option>
+            <option value="Atelier">Atelier</option>
+            <option value="Webinaire">Webinaire</option>
+            <option value="Événement">Événement</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[200px]">
+          <label class="text-sm font-semibold text-gray-700 mb-2 block">Statut</label>
+          <select 
+            [(ngModel)]="filterStatus"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition-colors">
+            <option value="Tous">Tous les statuts</option>
+            <option value="Inscrit">Inscrit</option>
+            <option value="Confirmé">Confirmé</option>
+            <option value="En attente">En attente</option>
+            <option value="Présent">Présent</option>
+            <option value="Absent">Absent</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Activities List -->
+    <div class="space-y-4">
+      <div 
+        *ngFor="let activity of filteredActivities"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+        
+        <!-- Activity Header -->
+        <div class="p-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-b border-gray-200">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start gap-4 flex-1">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-3xl shadow-lg">
+                {{ getTypeIcon(activity.type) }}
+              </div>
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ activity.titre }}</h3>
+                <div class="flex flex-wrap gap-3">
+                  <span [class]="getStatusColor(activity.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                    {{ activity.statut }}
+                  </span>
+                  <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border-2 border-purple-200">
+                    {{ activity.type }}
+                  </span>
+                  <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold border-2 border-gray-200">
+                    {{ getModaliteIcon(activity.modalite) }} {{ activity.modalite }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-blue-600">{{ activity.date | date: 'dd' }}</div>
+              <div class="text-sm text-gray-600">{{ activity.date | date: 'MMM yyyy' }}</div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Activity Details -->
+        <div class="p-6">
+          <p class="text-gray-700 mb-6 leading-relaxed">{{ activity.description }}</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+                ⏰
+              </div>
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Horaire</div>
+                <div class="font-semibold text-gray-900">{{ activity.heureDebut }} - {{ activity.heureFin }}</div>
+              </div>
+            </div>
+  
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
+                👨‍🏫
+              </div>
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Formateur</div>
+                <div class="font-semibold text-gray-900">{{ activity.formateur }}</div>
+              </div>
+            </div>
+  
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-xl">
+                📍
+              </div>
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Lieu</div>
+                <div class="font-semibold text-gray-900">{{ activity.lieu }}</div>
+              </div>
+            </div>
+  
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-xl">
+                👥
+              </div>
+              <div>
+                <div class="text-xs text-gray-600 mb-1">Participants</div>
+                <div class="font-semibold text-gray-900">{{ activity.participants }} inscrits</div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Action Buttons -->
+          <div class="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+            <button class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+              Voir détails
+            </button>
+            <button 
+              *ngIf="activity.statut === 'Inscrit' || activity.statut === 'En attente'"
+              class="px-6 py-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-all">
+              Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Empty State -->
+    <div *ngIf="filteredActivities.length === 0" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+      <div class="text-6xl mb-4">📭</div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune activité trouvée</h3>
+      <p class="text-gray-600">Essayez de modifier vos filtres</p>
+    </div>
+  
+  </div>
