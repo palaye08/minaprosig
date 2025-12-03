@@ -1,0 +1,377 @@
+<div class="space-y-6 p-6">
+  
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Gestion des Programmes</h1>
+        <p class="text-gray-600 mt-1">Gérez les programmes de formation et d'accompagnement</p>
+      </div>
+      <button 
+        (click)="openCreateModal()"
+        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>➕</span> Créer un programme
+      </button>
+    </div>
+  
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+        <div class="text-blue-100">Total programmes</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.actifs }}</div>
+        <div class="text-green-100">Programmes actifs</div>
+      </div>
+      <div class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.termines }}</div>
+        <div class="text-gray-100">Programmes terminés</div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.beneficiaires }}</div>
+        <div class="text-purple-100">Bénéficiaires inscrits</div>
+      </div>
+    </div>
+  
+    <!-- Filtres -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">🔍 Rechercher</label>
+          <input 
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filterProgrammes()"
+            placeholder="Nom, description, partenaire..."
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">📊 Statut</label>
+          <select 
+            [(ngModel)]="filterStatut"
+            (ngModelChange)="filterProgrammes()"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+            <option value="tous">Tous les statuts</option>
+            <option value="ACTIF">Actif</option>
+            <option value="TERMINE">Terminé</option>
+            <option value="PLANIFIE">Planifié</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Liste des Programmes -->
+    <div class="space-y-4">
+      <div 
+        *ngFor="let programme of filteredProgrammes"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+        
+        <!-- Programme Header -->
+        <div class="p-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-b border-gray-200">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <span [class]="getStatusColor(programme.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                  {{ programme.statut }}
+                </span>
+                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border-2 border-purple-200">
+                  💰 {{ formatMontant(programme.montantTotal) }}
+                </span>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ programme.nom }}</h3>
+              <p class="text-gray-600 mb-3">{{ programme.description }}</p>
+              <div class="flex items-center gap-4 text-sm text-gray-600">
+                <span>🤝 {{ programme.partenaire }}</span>
+                <span>📅 {{ programme.dateDebut | date: 'dd/MM/yyyy' }} - {{ programme.dateFin | date: 'dd/MM/yyyy' }}</span>
+                <span>👥 {{ programme.beneficiaires.length }} bénéficiaires</span>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Programme Content -->
+        <div class="p-6">
+          <!-- Activités -->
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">📚 Activités du programme:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let activite of programme.activites"
+                class="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm border-2 border-blue-100">
+                {{ activite }}
+              </span>
+            </div>
+          </div>
+  
+          <!-- Coachs -->
+          <div class="mb-4" *ngIf="programme.coachs.length > 0">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">👨‍🏫 Coachs assignés:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let coach of programme.coachs"
+                class="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm border-2 border-green-100">
+                {{ coach }}
+              </span>
+            </div>
+          </div>
+  
+          <!-- Bénéficiaires -->
+          <div class="mb-4" *ngIf="programme.beneficiaires.length > 0">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">👥 Bénéficiaires inscrits:</h4>
+            <div class="flex flex-wrap gap-2">
+              <span 
+                *ngFor="let beneficiaire of programme.beneficiaires"
+                class="px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-sm border-2 border-purple-100">
+                {{ beneficiaire }}
+              </span>
+            </div>
+          </div>
+  
+          <!-- Actions -->
+          <div class="flex gap-3 pt-4">
+            <button 
+              (click)="openAssociationModal(programme)"
+              class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+              <span>👥</span> Associer des bénéficiaires
+            </button>
+            <button 
+              (click)="openEditModal(programme)"
+              class="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+              <span>✏️</span> Modifier
+            </button>
+            <button 
+              (click)="deleteProgramme(programme.id)"
+              class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+              <span>🗑️</span> Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="filteredProgrammes.length === 0" class="text-center py-12 text-gray-500 bg-white rounded-2xl shadow-lg">
+        Aucun programme trouvé
+      </div>
+    </div>
+  
+    <!-- Modal Créer/Modifier Programme -->
+    <div 
+      *ngIf="showModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      (click)="closeModal()">
+      <div 
+        class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        (click)="$event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-8 text-white">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-3xl font-bold mb-2">
+                {{ modalMode === 'create' ? 'Nouveau Programme' : 'Modifier Programme' }}
+              </h2>
+              <p class="text-blue-100">Remplissez les informations du programme</p>
+            </div>
+            <button 
+              (click)="closeModal()"
+              class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center text-2xl">
+              ✕
+            </button>
+          </div>
+        </div>
+  
+        <!-- Modal Content -->
+        <div class="p-8">
+          <form (ngSubmit)="saveProgramme()" class="space-y-6">
+            
+            <!-- Informations générales -->
+            <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100">
+              <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span>📋</span> Informations générales
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Nom du programme *</label>
+                  <input 
+                    type="text"
+                    [(ngModel)]="selectedProgramme.nom"
+                    name="nom"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                  <textarea 
+                    [(ngModel)]="selectedProgramme.description"
+                    name="description"
+                    rows="3"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Partenaire *</label>
+                    <input 
+                      type="text"
+                      [(ngModel)]="selectedProgramme.partenaire"
+                      name="partenaire"
+                      required
+                      class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Montant total (FCFA) *</label>
+                    <input 
+                      type="number"
+                      [(ngModel)]="selectedProgramme.montantTotal"
+                      name="montantTotal"
+                      required
+                      class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Dates et Statut -->
+            <div class="p-6 rounded-2xl bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-100">
+              <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span>📅</span> Dates et statut
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Date de début *</label>
+                  <input 
+                    type="date"
+                    [(ngModel)]="selectedProgramme.dateDebut"
+                    name="dateDebut"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Date de fin *</label>
+                  <input 
+                    type="date"
+                    [(ngModel)]="selectedProgramme.dateFin"
+                    name="dateFin"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Statut *</label>
+                  <select 
+                    [(ngModel)]="selectedProgramme.statut"
+                    name="statut"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    <option value="PLANIFIE">Planifié</option>
+                    <option value="ACTIF">Actif</option>
+                    <option value="TERMINE">Terminé</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Actions -->
+            <div class="flex gap-4 justify-end pt-4">
+              <button 
+                type="button"
+                (click)="closeModal()"
+                class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                Annuler
+              </button>
+              <button 
+                type="submit"
+                class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+                {{ modalMode === 'create' ? 'Créer' : 'Enregistrer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Modal Association Bénéficiaires -->
+    <div 
+      *ngIf="showAssociationModal && programmeForAssociation"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      (click)="closeAssociationModal()">
+      <div 
+        class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        (click)="$event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 p-8 text-white">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-3xl font-bold mb-2">Associer des Bénéficiaires</h2>
+              <p class="text-green-100">{{ programmeForAssociation.nom }}</p>
+            </div>
+            <button 
+              (click)="closeAssociationModal()"
+              class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center text-2xl">
+              ✕
+            </button>
+          </div>
+        </div>
+  
+        <!-- Modal Content -->
+        <div class="p-8">
+          <div class="mb-6">
+            <p class="text-gray-600">
+              Sélectionnez les bénéficiaires à associer à ce programme. 
+              <span class="font-semibold">{{ selectedBeneficiaireIds.length }}</span> bénéficiaire(s) sélectionné(s).
+            </p>
+          </div>
+  
+          <div class="space-y-3">
+            <div 
+              *ngFor="let beneficiaire of beneficiairesDisponibles"
+              class="p-4 rounded-xl border-2 transition-all cursor-pointer"
+              [class.bg-green-50]="isBeneficiaireSelected(beneficiaire.id)"
+              [class.border-green-500]="isBeneficiaireSelected(beneficiaire.id)"
+              [class.bg-white]="!isBeneficiaireSelected(beneficiaire.id)"
+              [class.border-gray-200]="!isBeneficiaireSelected(beneficiaire.id)"
+              (click)="toggleBeneficiaire(beneficiaire.id)">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg">
+                    {{ beneficiaire.prenom.charAt(0) }}{{ beneficiaire.nom.charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">{{ beneficiaire.prenom }} {{ beneficiaire.nom }}</div>
+                    <div class="text-sm text-gray-500">{{ beneficiaire.email }}</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span 
+                    [class]="beneficiaire.statut === 'ACTIF' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-200'"
+                    class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                    {{ beneficiaire.statut }}
+                  </span>
+                  <input 
+                    type="checkbox"
+                    [checked]="isBeneficiaireSelected(beneficiaire.id)"
+                    class="w-6 h-6 text-green-600 rounded border-gray-300 focus:ring-green-500">
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Actions -->
+          <div class="flex gap-4 justify-end pt-6 mt-6 border-t border-gray-200">
+            <button 
+              type="button"
+              (click)="closeAssociationModal()"
+              class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+              Annuler
+            </button>
+            <button 
+              type="button"
+              (click)="saveAssociations()"
+              class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+              Enregistrer ({{ selectedBeneficiaireIds.length }})
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

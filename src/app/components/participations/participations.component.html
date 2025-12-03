@@ -1,0 +1,291 @@
+<div class="space-y-6 p-6">
+  
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Suivi des Participations</h1>
+        <p class="text-gray-600 mt-1">Gérez les participations des bénéficiaires aux activités</p>
+      </div>
+    </div>
+  
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+        <div class="text-blue-100">Total participations</div>
+      </div>
+      <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.enCours }}</div>
+        <div class="text-amber-100">En cours</div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.terminees }}</div>
+        <div class="text-green-100">Terminées</div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="text-4xl font-bold mb-2">{{ stats.tauxReussite }}%</div>
+        <div class="text-purple-100">Taux de réussite</div>
+      </div>
+    </div>
+  
+    <!-- Filtres -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">🔍 Rechercher</label>
+          <input 
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filterParticipations()"
+            placeholder="Bénéficiaire, programme, activité..."
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">📊 Statut</label>
+          <select 
+            [(ngModel)]="filterStatut"
+            (ngModelChange)="filterParticipations()"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+            <option value="tous">Tous les statuts</option>
+            <option value="EN_COURS">En cours</option>
+            <option value="TERMINEE">Terminée</option>
+            <option value="ABANDONNEE">Abandonnée</option>
+            <option value="PLANIFIEE">Planifiée</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">📚 Programme</label>
+          <select 
+            [(ngModel)]="filterProgramme"
+            (ngModelChange)="filterParticipations()"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+            <option value="tous">Tous les programmes</option>
+            <option value="Programme Entrepreneuriat Jeunes">Programme Entrepreneuriat Jeunes</option>
+            <option value="Programme Commerce et Artisanat">Programme Commerce et Artisanat</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Liste des Participations -->
+    <div class="space-y-4">
+      <div 
+        *ngFor="let participation of filteredParticipations"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+        
+        <!-- Participation Header -->
+        <div class="p-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border-b border-gray-200">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span [class]="getStatusColor(participation.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+                  {{ participation.statut }}
+                </span>
+                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border-2 border-purple-200">
+                  📅 {{ participation.dateDebut | date: 'dd/MM/yyyy' }} - {{ participation.dateFin | date: 'dd/MM/yyyy' }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  {{ participation.beneficiaireNom.split(' ')[0].charAt(0) }}{{ participation.beneficiaireNom.split(' ')[1]?.charAt(0) }}
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900">{{ participation.beneficiaireNom }}</h3>
+                  <p class="text-sm text-gray-600">{{ participation.programmeNom }}</p>
+                </div>
+              </div>
+              <h4 class="text-lg font-semibold text-gray-800 mt-2">🎯 {{ participation.activiteNom }}</h4>
+            </div>
+            <div class="text-right">
+              <div *ngIf="participation.note !== null" class="mb-2">
+                <div [class]="getNoteColor(participation.note)" class="text-4xl font-bold">{{ participation.note }}/100</div>
+                <div class="text-sm text-gray-600">Note finale</div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Progression Bar -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-gray-700">Progression</span>
+              <span class="text-sm font-bold text-gray-900">{{ participation.progression }}%</span>
+            </div>
+            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                [class]="'h-full bg-gradient-to-r transition-all duration-500 ' + getProgressionColor(participation.progression)"
+                [style.width.%]="participation.progression">
+              </div>
+            </div>
+          </div>
+  
+          <!-- Présences -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="p-3 rounded-xl bg-white border-2 border-green-100">
+              <div class="text-2xl font-bold text-green-600">{{ participation.presences }}</div>
+              <div class="text-xs text-gray-600">Présences</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white border-2 border-red-100">
+              <div class="text-2xl font-bold text-red-600">{{ participation.absences }}</div>
+              <div class="text-xs text-gray-600">Absences</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white border-2 border-blue-100">
+              <div class="text-2xl font-bold text-blue-600">{{ getTauxPresence(participation) }}%</div>
+              <div class="text-xs text-gray-600">Taux présence</div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Participation Content -->
+        <div class="p-6">
+          <div class="mb-4" *ngIf="participation.commentaire">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">💬 Commentaire:</h4>
+            <p class="text-gray-600 bg-gray-50 p-3 rounded-xl">{{ participation.commentaire }}</p>
+          </div>
+  
+          <button 
+            (click)="viewDetails(participation)"
+            class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+            <span>👁️</span> Voir les détails complets
+          </button>
+        </div>
+      </div>
+  
+      <div *ngIf="filteredParticipations.length === 0" class="text-center py-12 text-gray-500 bg-white rounded-2xl shadow-lg">
+        Aucune participation trouvée
+      </div>
+    </div>
+  
+    <!-- Modal Détails -->
+    <div 
+      *ngIf="showDetailsModal && selectedParticipation"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      (click)="closeDetailsModal()">
+      <div 
+        class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        (click)="$event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-8 text-white">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-3xl font-bold mb-2">Détails de la Participation</h2>
+              <p class="text-blue-100">{{ selectedParticipation.beneficiaireNom }} • {{ selectedParticipation.activiteNom }}</p>
+            </div>
+            <button 
+              (click)="closeDetailsModal()"
+              class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center text-2xl">
+              ✕
+            </button>
+          </div>
+        </div>
+  
+        <!-- Modal Content -->
+        <div class="p-8 space-y-6">
+          
+          <!-- Informations générales -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span>📋</span> Informations générales
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <span class="text-sm text-gray-600">Bénéficiaire</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.beneficiaireNom }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Programme</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.programmeNom }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Activité</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.activiteNom }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Statut</span>
+                <p>
+                  <span [class]="getStatusColor(selectedParticipation.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2 inline-block">
+                    {{ selectedParticipation.statut }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Dates -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span>📅</span> Dates
+            </h3>
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <span class="text-sm text-gray-600">Inscription</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.dateInscription | date: 'dd/MM/yyyy' }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Début</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.dateDebut | date: 'dd/MM/yyyy' }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Fin</span>
+                <p class="font-semibold text-gray-900">{{ selectedParticipation.dateFin | date: 'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Performances -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span>📊</span> Performances
+            </h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-semibold text-gray-700">Progression globale</span>
+                  <span class="text-lg font-bold text-gray-900">{{ selectedParticipation.progression }}%</span>
+                </div>
+                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    [class]="'h-full bg-gradient-to-r transition-all duration-500 ' + getProgressionColor(selectedParticipation.progression)"
+                    [style.width.%]="selectedParticipation.progression">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 pt-4">
+                <div class="p-4 rounded-xl bg-white border-2 border-green-100">
+                  <div class="text-sm text-gray-600 mb-1">Présences</div>
+                  <div class="text-3xl font-bold text-green-600">{{ selectedParticipation.presences }}</div>
+                </div>
+                <div class="p-4 rounded-xl bg-white border-2 border-red-100">
+                  <div class="text-sm text-gray-600 mb-1">Absences</div>
+                  <div class="text-3xl font-bold text-red-600">{{ selectedParticipation.absences }}</div>
+                </div>
+              </div>
+  
+              <div class="p-4 rounded-xl bg-white border-2 border-blue-100">
+                <div class="text-sm text-gray-600 mb-1">Taux de présence</div>
+                <div class="text-3xl font-bold text-blue-600">{{ getTauxPresence(selectedParticipation) }}%</div>
+              </div>
+  
+              <div *ngIf="selectedParticipation.note !== null" class="p-4 rounded-xl bg-white border-2 border-amber-100">
+                <div class="text-sm text-gray-600 mb-1">Note finale</div>
+                <div [class]="getNoteColor(selectedParticipation.note) + ' text-4xl font-bold'">
+                  {{ selectedParticipation.note }}/100
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Commentaire -->
+          <div class="p-6 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>💬</span> Commentaire
+            </h3>
+            <p class="text-gray-700">{{ selectedParticipation.commentaire || 'Aucun commentaire' }}</p>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+  </div>
