@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
+  // SUPPRIMÉ: Ne pas fournir AuthService ici, il est déjà providedIn: 'root'
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
@@ -19,7 +21,10 @@ export class LoginComponent {
   loading = false;
   showPassword = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   onSubmit(event: Event): void {
     event.preventDefault();
@@ -46,32 +51,80 @@ export class LoginComponent {
   
     this.loading = true;
   
-    // Simulation de connexion
-    setTimeout(() => {
-      this.loading = false;
-      
-      if (this.email && this.password) {
-        sessionStorage.setItem('user', JSON.stringify({ email: this.email }));
+    // Appel au service d'authentification
+    this.authService.authenticate({
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: (response) => {
+        this.loading = false;
         
-        // 🔥 CHANGEZ ICI : /dashboard → /beneficiaire/dashboard
-        this.router.navigate(['/beneficiaire/dashboard']);
-      } else {
-        this.error = 'Email ou mot de passe incorrect';
+        if (response.success) {
+          console.log('Connexion réussie:', response);
+          
+          // Déterminer la redirection en fonction du profil
+          this.redirectBasedOnProfile(response.data.utilisateur);
+        } else {
+          this.error = response.message || 'Échec de la connexion';
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Erreur de connexion:', error);
+        
+        // Gestion des erreurs spécifiques
+        if (error.status === 401) {
+          this.error = 'Email ou mot de passe incorrect';
+        } else if (error.status === 0) {
+          this.error = 'Impossible de se connecter au serveur. Vérifiez votre connexion internet.';
+        } else {
+          this.error = error.message || 'Une erreur est survenue lors de la connexion';
+        }
       }
-    }, 1500);
+    });
   }
-  
 
-  NavigateToDashboard() {
-    this.router.navigate(['/beneficiaire/dashboard']);
+  /**
+   * Redirige l'utilisateur en fonction de son profil
+   */
+  private redirectBasedOnProfile(user: any): void {
+    if (!user || !user.profile) {
+      this.router.navigate(['/beneficiaire/dashboard']);
+      return;
+    }
+
+    switch (user.profile) {
+      case 'ADMIN':
+        this.router.navigate(['/admin/beneficiaires']);
+        break;
+      case 'BENEFICIAIRE':
+        this.router.navigate(['/beneficiaire/dashboard']);
+        break;
+      case 'COACH':
+        this.router.navigate(['/coach/dashboard']);
+        break;
+      default:
+        this.router.navigate(['/beneficiaire/dashboard']);
+    }
   }
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
   // Pour la démo - à retirer en production
   fillDemoCredentials(): void {
-    this.email = 'demo@minapro.com';
-    this.password = 'demo123';
+    this.email = 'palaye@yopmail.com';
+    this.password = 'passer123';
+  }
+
+  // Méthode pour se connecter avec les identifiants de démo
+  loginWithDemo(): void {
+    this.fillDemoCredentials();
+    // Déclencher la soumission après avoir rempli les champs
+    setTimeout(() => {
+      const event = new Event('submit', { cancelable: true });
+      this.onSubmit(event);
+    }, 100);
   }
 }

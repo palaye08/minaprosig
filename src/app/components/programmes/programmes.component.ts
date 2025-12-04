@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProgrammeService } from '../../../services/programme.service';
+import { UserService } from '../../../services/user.service';
 
 interface Programme {
   id: number;
@@ -8,16 +10,23 @@ interface Programme {
   description: string;
   partenaire: string;
   montantTotal: number;
-  activites: string[];
+  activites: string;
   dateDebut: string;
   dateFin: string;
   statut: string;
-  coachIds: number[];
-  coachs: string[];
-  beneficiaireIds: number[];
-  beneficiaires: string[];
+  coachIds: number[] | null;
+  coachs: any[] | null;
+  beneficiaireIds: number[] | null;
+  beneficiaires: any[] | null;
   createdAt: string;
   updatedAt: string;
+}
+
+interface Coach {
+  id: number;
+  prenom: string;
+  nom: string;
+  email: string;
 }
 
 interface Beneficiaire {
@@ -38,16 +47,20 @@ export class ProgrammesComponent implements OnInit {
   programmes: Programme[] = [];
   filteredProgrammes: Programme[] = [];
   beneficiairesDisponibles: Beneficiaire[] = [];
+  coachsDisponibles: Coach[] = [];
   
   showModal = false;
   showAssociationModal = false;
   modalMode: 'create' | 'edit' = 'create';
   searchTerm = '';
   filterStatut = 'tous';
+  loading = false;
+  error = '';
 
   selectedProgramme: Programme = this.getEmptyProgramme();
   programmeForAssociation: Programme | null = null;
   selectedBeneficiaireIds: number[] = [];
+  selectedCoachIds: number[] = [];
 
   stats = {
     total: 0,
@@ -56,89 +69,82 @@ export class ProgrammesComponent implements OnInit {
     beneficiaires: 0
   };
 
-  constructor() {}
+  constructor(
+    private programmeService: ProgrammeService,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     this.loadProgrammes();
     this.loadBeneficiaires();
-    this.calculateStats();
+    this.loadCoachs();
   }
 
   loadProgrammes() {
-    // Mock data - À remplacer par un appel API
-    this.programmes = [
-      {
-        id: 1,
-        nom: 'Programme Entrepreneuriat Jeunes',
-        description: 'Programme de formation et d\'accompagnement pour jeunes entrepreneurs',
-        partenaire: 'Bailleur International',
-        montantTotal: 50000000,
-        activites: ['Formation gestion', 'Coaching individuel', 'Mentorat'],
-        dateDebut: '2024-01-01',
-        dateFin: '2024-12-31',
-        statut: 'ACTIF',
-        coachIds: [1, 2],
-        coachs: ['Marie SARR', 'Jean DIALLO'],
-        beneficiaireIds: [1, 2],
-        beneficiaires: ['Palaye DIOP', 'Aminata FALL'],
-        createdAt: '2023-12-01',
-        updatedAt: '2024-11-01'
-      },
-      {
-        id: 2,
-        nom: 'Programme Commerce et Artisanat',
-        description: 'Développement des compétences en commerce et artisanat traditionnel',
-        partenaire: 'Bailleur Local',
-        montantTotal: 30000000,
-        activites: ['Formation technique', 'Marketing', 'Gestion financière'],
-        dateDebut: '2024-02-01',
-        dateFin: '2024-11-30',
-        statut: 'ACTIF',
-        coachIds: [3],
-        coachs: ['Fatou SECK'],
-        beneficiaireIds: [3],
-        beneficiaires: ['Moussa NDIAYE'],
-        createdAt: '2024-01-15',
-        updatedAt: '2024-10-20'
-      },
-      {
-        id: 3,
-        nom: 'Programme Agriculture Durable',
-        description: 'Formation aux techniques agricoles modernes et durables',
-        partenaire: 'ONG Développement',
-        montantTotal: 40000000,
-        activites: ['Formation agro-écologie', 'Gestion de l\'eau', 'Marketing produits'],
-        dateDebut: '2023-06-01',
-        dateFin: '2023-12-31',
-        statut: 'TERMINE',
-        coachIds: [4],
-        coachs: ['Ibrahima BA'],
-        beneficiaireIds: [],
-        beneficiaires: [],
-        createdAt: '2023-05-10',
-        updatedAt: '2024-01-05'
-      }
-    ];
+    this.loading = true;
+    this.error = '';
     
-    this.filteredProgrammes = [...this.programmes];
+    this.programmeService.getProgrammes(0, 100).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.programmes = response.data.content || [];
+          this.filteredProgrammes = [...this.programmes];
+          this.calculateStats();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des programmes:', error);
+        this.error = 'Impossible de charger les programmes';
+        this.loading = false;
+      }
+    });
   }
 
   loadBeneficiaires() {
-    // Mock data - À remplacer par un appel API
-    this.beneficiairesDisponibles = [
-      { id: 1, prenom: 'Palaye', nom: 'DIOP', email: 'palaye@yopmail.com', statut: 'ACTIF' },
-      { id: 2, prenom: 'Aminata', nom: 'FALL', email: 'aminata@yopmail.com', statut: 'ACTIF' },
-      { id: 3, prenom: 'Moussa', nom: 'NDIAYE', email: 'moussa@yopmail.com', statut: 'INACTIF' },
-      { id: 4, prenom: 'Fatou', nom: 'SECK', email: 'fatou@yopmail.com', statut: 'ACTIF' },
-      { id: 5, prenom: 'Ousmane', nom: 'SY', email: 'ousmane@yopmail.com', statut: 'ACTIF' }
-    ];
+    this.userService.getUtilisateursByProfile('BENEFICIAIRE').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.beneficiairesDisponibles = response.data.map((user: any) => ({
+            id: user.id,
+            prenom: user.prenom,
+            nom: user.nom,
+            email: user.email,
+            statut: user.statut || 'ACTIF'
+          }));
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des bénéficiaires:', error);
+      }
+    });
+  }
+
+  loadCoachs() {
+    this.userService.getUtilisateursByProfile('COACH').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.coachsDisponibles = response.data.map((user: any) => ({
+            id: user.id,
+            prenom: user.prenom,
+            nom: user.nom,
+            email: user.email
+          }));
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des coachs:', error);
+      }
+    });
   }
 
   calculateStats() {
     this.stats.total = this.programmes.length;
     this.stats.actifs = this.programmes.filter(p => p.statut === 'ACTIF').length;
     this.stats.termines = this.programmes.filter(p => p.statut === 'TERMINE').length;
-    this.stats.beneficiaires = this.programmes.reduce((sum, p) => sum + p.beneficiaireIds.length, 0);
+    this.stats.beneficiaires = this.programmes.reduce((sum, p) => 
+      sum + (p.beneficiaireIds?.length || 0), 0
+    );
   }
 
   filterProgrammes() {
@@ -157,12 +163,14 @@ export class ProgrammesComponent implements OnInit {
   openCreateModal() {
     this.modalMode = 'create';
     this.selectedProgramme = this.getEmptyProgramme();
+    this.selectedCoachIds = [];
     this.showModal = true;
   }
 
   openEditModal(programme: Programme) {
     this.modalMode = 'edit';
     this.selectedProgramme = { ...programme };
+    this.selectedCoachIds = programme.coachIds ? [...programme.coachIds] : [];
     this.showModal = true;
   }
 
@@ -171,35 +179,74 @@ export class ProgrammesComponent implements OnInit {
   }
 
   saveProgramme() {
-    if (this.modalMode === 'create') {
-      this.selectedProgramme.id = this.programmes.length + 1;
-      this.selectedProgramme.createdAt = new Date().toISOString();
-      this.selectedProgramme.updatedAt = new Date().toISOString();
-      this.programmes.push({ ...this.selectedProgramme });
-    } else {
-      const index = this.programmes.findIndex(p => p.id === this.selectedProgramme.id);
-      if (index !== -1) {
-        this.selectedProgramme.updatedAt = new Date().toISOString();
-        this.programmes[index] = { ...this.selectedProgramme };
-      }
-    }
+    this.loading = true;
+    this.error = '';
     
-    this.filterProgrammes();
-    this.calculateStats();
-    this.closeModal();
+    // Préparer les données avec les IDs des coachs sélectionnés
+    const programmeData = {
+      ...this.selectedProgramme,
+      coachIds: this.selectedCoachIds
+    };
+    
+    if (this.modalMode === 'create') {
+      this.programmeService.createProgramme(programmeData).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadProgrammes();
+            this.closeModal();
+            alert('Programme créé avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la création:', error);
+          this.error = 'Impossible de créer le programme';
+          this.loading = false;
+        }
+      });
+    } else {
+      this.programmeService.updateProgramme(this.selectedProgramme.id, programmeData).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadProgrammes();
+            this.closeModal();
+            alert('Programme modifié avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la modification:', error);
+          this.error = 'Impossible de modifier le programme';
+          this.loading = false;
+        }
+      });
+    }
   }
 
   deleteProgramme(id: number) {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce programme ?')) {
-      this.programmes = this.programmes.filter(p => p.id !== id);
-      this.filterProgrammes();
-      this.calculateStats();
+      this.loading = true;
+      
+      this.programmeService.deleteProgramme(id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadProgrammes();
+            alert('Programme supprimé avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          alert('Impossible de supprimer le programme');
+          this.loading = false;
+        }
+      });
     }
   }
 
   openAssociationModal(programme: Programme) {
     this.programmeForAssociation = programme;
-    this.selectedBeneficiaireIds = [...programme.beneficiaireIds];
+    this.selectedBeneficiaireIds = programme.beneficiaireIds ? [...programme.beneficiaireIds] : [];
     this.showAssociationModal = true;
   }
 
@@ -222,20 +269,42 @@ export class ProgrammesComponent implements OnInit {
     return this.selectedBeneficiaireIds.includes(beneficiaireId);
   }
 
+  toggleCoach(coachId: number) {
+    const index = this.selectedCoachIds.indexOf(coachId);
+    if (index > -1) {
+      this.selectedCoachIds.splice(index, 1);
+    } else {
+      this.selectedCoachIds.push(coachId);
+    }
+  }
+
+  isCoachSelected(coachId: number): boolean {
+    return this.selectedCoachIds.includes(coachId);
+  }
+
   saveAssociations() {
     if (this.programmeForAssociation) {
-      const index = this.programmes.findIndex(p => p.id === this.programmeForAssociation!.id);
-      if (index !== -1) {
-        this.programmes[index].beneficiaireIds = [...this.selectedBeneficiaireIds];
-        this.programmes[index].beneficiaires = this.beneficiairesDisponibles
-          .filter(b => this.selectedBeneficiaireIds.includes(b.id))
-          .map(b => `${b.prenom} ${b.nom}`);
-        this.programmes[index].updatedAt = new Date().toISOString();
-      }
+      this.loading = true;
+      
+      this.programmeService.associerBeneficiairesToProgramme(
+        this.programmeForAssociation.id,
+        this.selectedBeneficiaireIds
+      ).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadProgrammes();
+            this.closeAssociationModal();
+            alert('Bénéficiaires associés avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'association:', error);
+          alert('Impossible d\'associer les bénéficiaires');
+          this.loading = false;
+        }
+      });
     }
-    
-    this.calculateStats();
-    this.closeAssociationModal();
   }
 
   getStatusColor(statut: string): string {
@@ -258,7 +327,7 @@ export class ProgrammesComponent implements OnInit {
       description: '',
       partenaire: '',
       montantTotal: 0,
-      activites: [],
+      activites: '', // STRING, pas array
       dateDebut: '',
       dateFin: '',
       statut: 'PLANIFIE',

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
 
 interface Beneficiaire {
   id: number;
@@ -19,8 +20,10 @@ interface Beneficiaire {
   programme: string;
   bailleur: string;
   coachId: number | null;
+  coachNom?: string;
   statut: string;
   dateInscription: string;
+  createdAt?: string;
 }
 
 interface Activite {
@@ -50,6 +53,8 @@ export class DetailsBeneficiaireComponent implements OnInit {
   beneficiaire: Beneficiaire | null = null;
   activites: Activite[] = [];
   coachings: Coaching[] = [];
+  loading = false;
+  error = '';
   
   stats = {
     activitesTerminees: 0,
@@ -60,7 +65,8 @@ export class DetailsBeneficiaireComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -71,27 +77,44 @@ export class DetailsBeneficiaireComponent implements OnInit {
   }
 
   loadBeneficiaire(id: number) {
-    // Mock data - remplacer par un appel API
-    this.beneficiaire = {
-      id: 1,
-      prenom: 'Palaye',
-      nom: 'DIOP',
-      email: 'palaye@yopmail.com',
-      genre: 'MASCULIN',
-      dateNaissance: '1990-01-01',
-      telephone: '+221701234567',
-      adresse: 'Dakar Plateau',
-      region: 'Dakar',
-      ville: 'Dakar',
-      zone: 'URBAINE',
-      niveauEducation: 'Supérieur',
-      situationProfessionnelle: 'Entrepreneur',
-      programme: 'Programme Entrepreneuriat',
-      bailleur: 'Bailleur International',
-      coachId: 1,
-      statut: 'ACTIF',
-      dateInscription: '2024-01-15'
-    };
+    this.loading = true;
+    this.error = '';
+    
+    this.userService.getUtilisateurById(id).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const user = response.data;
+          this.beneficiaire = {
+            id: user.id,
+            prenom: user.prenom || '',
+            nom: user.nom || '',
+            email: user.email || '',
+            genre: user.genre || '',
+            dateNaissance: user.dateNaissance || '',
+            telephone: user.telephone || '',
+            adresse: user.adresse || '',
+            region: user.region || '',
+            ville: user.ville || '',
+            zone: user.zone || '',
+            niveauEducation: user.niveauEducation || '',
+            situationProfessionnelle: user.situationProfessionnelle || '',
+            programme: user.programme || '',
+            bailleur: user.bailleur || '',
+            coachId: user.coachId || null,
+            coachNom: user.coachNom || 'Non assigné',
+            statut: user.statut || 'ACTIF',
+            dateInscription: user.createdAt || '',
+            createdAt: user.createdAt || ''
+          };
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du bénéficiaire:', error);
+        this.error = 'Impossible de charger les détails du bénéficiaire';
+        this.loading = false;
+      }
+    });
   }
 
   loadActivites(beneficiaireId: number) {

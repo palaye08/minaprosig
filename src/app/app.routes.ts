@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { AccueilComponent } from './components/accueil/accueil.component';
 import { LoginComponent } from './components/login/login.component';
+import { AppComponent } from './app.component';
+
+// Composants Bénéficiaire
+import { BeneficiaireLayoutComponent } from './components/beneficiaire-layout/beneficiaire-layout.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MonProfilComponent } from './components/mon-profil/mon-profil.component';
 import { MesActivitesComponent } from './components/mes-activites/mes-activites.component';
@@ -8,8 +12,13 @@ import { MesCoachingsComponent } from './components/mes-coachings/mes-coachings.
 import { MesObjectifsComponent } from './components/mes-objectifs/mes-objectifs.component';
 import { MesDocumentsComponent } from './components/mes-documents/mes-documents.component';
 import { MonScoreComponent } from './components/mon-score/mon-score.component';
-import { AppComponent } from './app.component';
-import { BeneficiaireLayoutComponent } from './components/beneficiaire-layout/beneficiaire-layout.component';
+
+// Composants Admin
+import { BeneficiairesComponent } from './components/beneficiaires/beneficiaires.component';
+import { DetailsBeneficiaireComponent } from './components/details-beneficiaire/details-beneficiaire.component';
+import { ProgrammesComponent } from './components/programmes/programmes.component';
+import { ParticipationsComponent } from './components/participations/participations.component';
+import { AdminLayoutComponent } from './components/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +31,8 @@ export const routes: Routes = [
     component: LoginComponent,
     title: 'Connexion - MinaPro'
   },
+  
+  // Routes Bénéficiaire
   {
     path: 'beneficiaire',
     component: BeneficiaireLayoutComponent,
@@ -68,6 +79,40 @@ export const routes: Routes = [
       }
     ]
   },
+  
+  // Routes Admin
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    children: [
+      {
+        path: 'beneficiaires',
+        component: BeneficiairesComponent,
+        title: 'Gestion des Bénéficiaires - Admin'
+      },
+      {
+        path: 'beneficiaires/:id',
+        component: DetailsBeneficiaireComponent,
+        title: 'Détails Bénéficiaire - Admin'
+      },
+      {
+        path: 'programmes',
+        component: ProgrammesComponent,
+        title: 'Gestion des Programmes - Admin'
+      },
+      {
+        path: 'participations',
+        component: ParticipationsComponent,
+        title: 'Suivi des Participations - Admin'
+      },
+      {
+        path: '',
+        redirectTo: 'beneficiaires',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  
   {
     path: '',
     redirectTo: '/accueil',

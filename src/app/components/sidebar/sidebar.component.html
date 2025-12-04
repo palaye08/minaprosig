@@ -30,7 +30,7 @@
       </div>
       <div *ngIf="isOpen" class="flex-1 min-w-0">
         <h3 class="font-semibold text-gray-900 truncate">{{ userName }}</h3>
-        <p class="text-sm text-blue-600 font-medium">{{ userRole }}</p>
+        <p class="text-sm font-medium" [ngClass]="getRoleColor()">{{ getRoleLabel() }}</p>
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@
             class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
             {{ item.badge }}
           </span>
-          <span *ngIf="!isOpen" class="text-xs text-center">{{ item.label.split(' ')[1] || item.label.split(' ')[0] }}</span>
+          <span *ngIf="!isOpen" class="text-xs text-center">{{ getShortLabel(item.label) }}</span>
         </a>
       </li>
     </ul>

@@ -1,17 +1,30 @@
-import { HttpClientModule } from '@angular/common/http';
+// app.module.ts (extrait)
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [
-    // tes composants ici
+    // vos composants
   ],
   imports: [
     BrowserModule,
-    HttpClientModule, // ✅ ajoute cette ligne !
-    // ...autres imports
+    HttpClientModule,
+    // autres modules
+  ],
+  providers: [
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   // bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  
+}

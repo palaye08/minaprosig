@@ -2,12 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
+import { AuthService } from '../../../services/auth.service';
 
 interface Beneficiaire {
   id: number;
+  idBeneficiaire?: string;
   prenom: string;
   nom: string;
   email: string;
+  password?: string;
   profile: string;
   genre: string;
   dateNaissance: string;
@@ -23,7 +27,8 @@ interface Beneficiaire {
   bailleur: string;
   coachId: number | null;
   statut: string;
-  dateInscription: string;
+  dateInscription?: string;
+  createdAt?: string;
 }
 
 @Component({
@@ -40,6 +45,8 @@ export class BeneficiairesComponent implements OnInit {
   searchTerm = '';
   filterStatut = 'tous';
   filterProgramme = 'tous';
+  loading = false;
+  error = '';
 
   selectedBeneficiaire: Beneficiaire = this.getEmptyBeneficiaire();
 
@@ -50,85 +57,60 @@ export class BeneficiairesComponent implements OnInit {
     nouveaux: 0
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadBeneficiaires();
-    this.calculateStats();
   }
 
   loadBeneficiaires() {
-    // Données mockées - À remplacer par un appel API
-    this.beneficiaires = [
-      {
-        id: 1,
-        prenom: 'Palaye',
-        nom: 'DIOP',
-        email: 'palaye@yopmail.com',
-        profile: 'BENEFICIAIRE',
-        genre: 'MASCULIN',
-        dateNaissance: '1990-01-01',
-        telephone: '+221701234567',
-        adresse: 'Dakar Plateau',
-        pays: 'Sénégal',
-        region: 'Dakar',
-        ville: 'Dakar',
-        zone: 'URBAINE',
-        niveauEducation: 'Supérieur',
-        situationProfessionnelle: 'Entrepreneur',
-        programme: 'Programme Entrepreneuriat',
-        bailleur: 'Bailleur International',
-        coachId: 1,
-        statut: 'ACTIF',
-        dateInscription: '2024-01-15'
-      },
-      {
-        id: 2,
-        prenom: 'Aminata',
-        nom: 'FALL',
-        email: 'aminata@yopmail.com',
-        profile: 'BENEFICIAIRE',
-        genre: 'FEMININ',
-        dateNaissance: '1995-05-12',
-        telephone: '+221772345678',
-        adresse: 'Thiès Ville',
-        pays: 'Sénégal',
-        region: 'Thiès',
-        ville: 'Thiès',
-        zone: 'URBAINE',
-        niveauEducation: 'Secondaire',
-        situationProfessionnelle: 'Commerçante',
-        programme: 'Programme Commerce',
-        bailleur: 'Bailleur Local',
-        coachId: 2,
-        statut: 'ACTIF',
-        dateInscription: '2024-02-20'
-      },
-      {
-        id: 3,
-        prenom: 'Moussa',
-        nom: 'NDIAYE',
-        email: 'moussa@yopmail.com',
-        profile: 'BENEFICIAIRE',
-        genre: 'MASCULIN',
-        dateNaissance: '1988-08-25',
-        telephone: '+221783456789',
-        adresse: 'Saint-Louis Centre',
-        pays: 'Sénégal',
-        region: 'Saint-Louis',
-        ville: 'Saint-Louis',
-        zone: 'URBAINE',
-        niveauEducation: 'Primaire',
-        situationProfessionnelle: 'Artisan',
-        programme: 'Programme Artisanat',
-        bailleur: 'Bailleur International',
-        coachId: null,
-        statut: 'INACTIF',
-        dateInscription: '2023-11-10'
-      }
-    ];
+    this.loading = true;
+    this.error = '';
     
-    this.filteredBeneficiaires = [...this.beneficiaires];
+    // Appel API pour récupérer les bénéficiaires
+    this.userService.getUtilisateursByProfile('BENEFICIAIRE').subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.beneficiaires = response.data.map((user: any) => ({
+            id: user.id,
+            idBeneficiaire: user.idBeneficiaire || `BEN-${user.id}`,
+            prenom: user.prenom || '',
+            nom: user.nom || '',
+            email: user.email || '',
+            profile: user.profile || 'BENEFICIAIRE',
+            genre: user.genre || '',
+            dateNaissance: user.dateNaissance || '',
+            telephone: user.telephone || '',
+            adresse: user.adresse || '',
+            pays: user.pays || 'Sénégal',
+            region: user.region || '',
+            ville: user.ville || '',
+            zone: user.zone || '',
+            niveauEducation: user.niveauEducation || '',
+            situationProfessionnelle: user.situationProfessionnelle || '',
+            programme: user.programme || '',
+            bailleur: user.bailleur || '',
+            coachId: user.coachId || null,
+            statut: user.statut || 'ACTIF',
+            dateInscription: user.createdAt || '',
+            createdAt: user.createdAt || ''
+          }));
+          
+          this.filteredBeneficiaires = [...this.beneficiaires];
+          this.calculateStats();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des bénéficiaires:', error);
+        this.error = 'Impossible de charger les bénéficiaires';
+        this.loading = false;
+      }
+    });
   }
 
   calculateStats() {
@@ -139,7 +121,7 @@ export class BeneficiairesComponent implements OnInit {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     this.stats.nouveaux = this.beneficiaires.filter(b => 
-      new Date(b.dateInscription) > thirtyDaysAgo
+      b.createdAt && new Date(b.createdAt) > thirtyDaysAgo
     ).length;
   }
 
@@ -174,27 +156,91 @@ export class BeneficiairesComponent implements OnInit {
   }
 
   saveBeneficiaire() {
-    if (this.modalMode === 'create') {
-      this.selectedBeneficiaire.id = this.beneficiaires.length + 1;
-      this.selectedBeneficiaire.dateInscription = new Date().toISOString().split('T')[0];
-      this.beneficiaires.push({ ...this.selectedBeneficiaire });
-    } else {
-      const index = this.beneficiaires.findIndex(b => b.id === this.selectedBeneficiaire.id);
-      if (index !== -1) {
-        this.beneficiaires[index] = { ...this.selectedBeneficiaire };
-      }
-    }
+    this.loading = true;
+    this.error = '';
     
-    this.filterBeneficiaires();
-    this.calculateStats();
-    this.closeModal();
+    if (this.modalMode === 'create') {
+      // Création via AuthService avec profil BENEFICIAIRE
+      const userData = {
+        prenom: this.selectedBeneficiaire.prenom,
+        nom: this.selectedBeneficiaire.nom,
+        email: this.selectedBeneficiaire.email,
+        password: this.selectedBeneficiaire.password || 'passer123', // Mot de passe par défaut
+        profile: 'BENEFICIAIRE', // Fixé à BENEFICIAIRE
+        genre: this.selectedBeneficiaire.genre,
+        dateNaissance: this.selectedBeneficiaire.dateNaissance,
+        telephone: this.selectedBeneficiaire.telephone,
+        adresse: this.selectedBeneficiaire.adresse,
+        pays: this.selectedBeneficiaire.pays,
+        region: this.selectedBeneficiaire.region,
+        ville: this.selectedBeneficiaire.ville,
+        zone: this.selectedBeneficiaire.zone,
+        niveauEducation: this.selectedBeneficiaire.niveauEducation,
+        situationProfessionnelle: this.selectedBeneficiaire.situationProfessionnelle,
+        programme: this.selectedBeneficiaire.programme,
+        bailleur: this.selectedBeneficiaire.bailleur,
+        coachId: this.selectedBeneficiaire.coachId
+      };
+
+      this.authService.createUser(userData).subscribe({
+        next: (response) => {
+          console.log('Bénéficiaire créé:', response);
+          this.loadBeneficiaires(); // Recharger la liste
+          this.closeModal();
+          alert('Bénéficiaire créé avec succès !');
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la création:', error);
+          this.error = error.message || 'Impossible de créer le bénéficiaire';
+          this.loading = false;
+        }
+      });
+    } else {
+      // Mise à jour via UserService
+      this.userService.updateUtilisateur(this.selectedBeneficiaire.id, this.selectedBeneficiaire).subscribe({
+        next: (response) => {
+          if (response.success) {
+            const index = this.beneficiaires.findIndex(b => b.id === this.selectedBeneficiaire.id);
+            if (index !== -1) {
+              this.beneficiaires[index] = { ...this.selectedBeneficiaire };
+            }
+            this.filterBeneficiaires();
+            this.calculateStats();
+            this.closeModal();
+            alert('Bénéficiaire modifié avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la sauvegarde:', error);
+          this.error = error.message || 'Impossible de sauvegarder les modifications';
+          this.loading = false;
+        }
+      });
+    }
   }
 
   deleteBeneficiaire(id: number) {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce bénéficiaire ?')) {
-      this.beneficiaires = this.beneficiaires.filter(b => b.id !== id);
-      this.filterBeneficiaires();
-      this.calculateStats();
+      this.loading = true;
+      
+      this.userService.deleteUtilisateur(id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.beneficiaires = this.beneficiaires.filter(b => b.id !== id);
+            this.filterBeneficiaires();
+            this.calculateStats();
+            alert('Bénéficiaire supprimé avec succès !');
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          alert('Impossible de supprimer le bénéficiaire');
+          this.loading = false;
+        }
+      });
     }
   }
 
@@ -214,6 +260,7 @@ export class BeneficiairesComponent implements OnInit {
       prenom: '',
       nom: '',
       email: '',
+      password: 'passer123', // Mot de passe par défaut pour la création
       profile: 'BENEFICIAIRE',
       genre: 'MASCULIN',
       dateNaissance: '',

@@ -1,224 +1,224 @@
 <div class="space-y-6 p-6" *ngIf="beneficiaire">
   
-    <!-- Header avec bouton retour -->
-    <div class="flex items-center justify-between">
-      <button 
-        (click)="goBack()"
-        class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all flex items-center gap-2">
-        ← Retour
-      </button>
-    </div>
-  
-    <!-- En-tête du profil -->
-    <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 text-white shadow-2xl">
-      <div class="flex items-start gap-6">
-        <div class="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl font-bold shadow-lg">
-          {{ beneficiaire.prenom.charAt(0) }}{{ beneficiaire.nom.charAt(0) }}
-        </div>
-        <div class="flex-1">
-          <h1 class="text-4xl font-bold mb-2">{{ beneficiaire.prenom }} {{ beneficiaire.nom }}</h1>
-          <div class="flex items-center gap-4 text-lg text-blue-100 mb-4">
-            <span>📧 {{ beneficiaire.email }}</span>
-            <span>📞 {{ beneficiaire.telephone }}</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span [class]="getStatusColor(beneficiaire.statut)" class="px-4 py-2 rounded-full text-sm font-semibold">
-              {{ beneficiaire.statut }}
-            </span>
-            <span class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold">
-              {{ beneficiaire.genre }}
-            </span>
-            <span class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold">
-              {{ calculateAge(beneficiaire.dateNaissance) }} ans
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
-        <div class="text-4xl font-bold mb-2">{{ stats.activitesTerminees }}</div>
-        <div class="text-blue-100">Activités terminées</div>
-      </div>
-      <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
-        <div class="text-4xl font-bold mb-2">{{ stats.coachingsRealises }}</div>
-        <div class="text-purple-100">Sessions coaching</div>
-      </div>
-      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
-        <div class="text-4xl font-bold mb-2">{{ stats.progression }}%</div>
-        <div class="text-green-100">Progression globale</div>
-      </div>
-      <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
-        <div class="text-4xl font-bold mb-2">{{ stats.score }}</div>
-        <div class="text-amber-100">Score total</div>
-      </div>
-    </div>
-  
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
-      <!-- Informations personnelles -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span>👤</span> Informations personnelles
-        </h2>
-        <div class="space-y-4">
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Date de naissance</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.dateNaissance | date: 'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Âge</span>
-            <span class="text-gray-900 font-semibold">{{ calculateAge(beneficiaire.dateNaissance) }} ans</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Genre</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.genre }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Téléphone</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.telephone }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3">
-            <span class="text-gray-600 font-medium">Email</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.email }}</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Localisation -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span>📍</span> Localisation
-        </h2>
-        <div class="space-y-4">
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Adresse</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.adresse }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Ville</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.ville }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Région</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.region }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3">
-            <span class="text-gray-600 font-medium">Zone</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.zone }}</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Formation et programme -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span>📚</span> Formation et programme
-        </h2>
-        <div class="space-y-4">
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Niveau d'éducation</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.niveauEducation }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Situation professionnelle</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.situationProfessionnelle }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Programme</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.programme }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3">
-            <span class="text-gray-600 font-medium">Bailleur</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.bailleur }}</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Informations du compte -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span>ℹ️</span> Informations du compte
-        </h2>
-        <div class="space-y-4">
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Date d'inscription</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.dateInscription | date: 'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="flex justify-between items-center py-3 border-b border-gray-100">
-            <span class="text-gray-600 font-medium">Statut du compte</span>
-            <span [class]="getStatusColor(beneficiaire.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
-              {{ beneficiaire.statut }}
-            </span>
-          </div>
-          <div class="flex justify-between items-center py-3">
-            <span class="text-gray-600 font-medium">ID Coach</span>
-            <span class="text-gray-900 font-semibold">{{ beneficiaire.coachId || 'Non assigné' }}</span>
-          </div>
-        </div>
-      </div>
-  
-    </div>
-  
-    <!-- Activités récentes -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <span>🎯</span> Activités récentes
-      </h2>
-      <div class="space-y-4">
-        <div 
-          *ngFor="let activite of activites"
-          class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100 hover:shadow-md transition-all">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h3 class="font-bold text-gray-900 text-lg">{{ activite.titre }}</h3>
-              <p class="text-sm text-gray-600">{{ activite.type }} • {{ activite.date | date: 'dd/MM/yyyy' }}</p>
-            </div>
-            <span [class]="getStatusColor(activite.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
-              {{ activite.statut }}
-            </span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
-                [style.width.%]="activite.progression">
-              </div>
-            </div>
-            <span class="text-sm font-bold text-gray-700">{{ activite.progression }}%</span>
-          </div>
-        </div>
-        <div *ngIf="activites.length === 0" class="text-center py-8 text-gray-500">
-          Aucune activité enregistrée
-        </div>
-      </div>
-    </div>
-  
-    <!-- Sessions de coaching -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <span>👨‍🏫</span> Sessions de coaching
-      </h2>
-      <div class="space-y-4">
-        <div 
-          *ngFor="let coaching of coachings"
-          class="p-4 rounded-xl bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-100 hover:shadow-md transition-all">
-          <div class="flex items-center justify-between">
-            <div class="flex-1">
-              <h3 class="font-bold text-gray-900 text-lg mb-1">{{ coaching.objectif }}</h3>
-              <p class="text-sm text-gray-600 mb-2">👨‍🏫 {{ coaching.coach }} • 📅 {{ coaching.date | date: 'dd/MM/yyyy' }}</p>
-            </div>
-            <span [class]="getStatusColor(coaching.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
-              {{ coaching.statut }}
-            </span>
-          </div>
-        </div>
-        <div *ngIf="coachings.length === 0" class="text-center py-8 text-gray-500">
-          Aucune session de coaching enregistrée
-        </div>
-      </div>
-    </div>
-  
+  <!-- Header avec bouton retour -->
+  <div class="flex items-center justify-between">
+    <button 
+      (click)="goBack()"
+      class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all flex items-center gap-2">
+      ← Retour
+    </button>
   </div>
+
+  <!-- En-tête du profil -->
+  <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-8 text-white shadow-2xl">
+    <div class="flex items-start gap-6">
+      <div class="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl font-bold shadow-lg">
+        {{ beneficiaire.prenom.charAt(0) }}{{ beneficiaire.nom.charAt(0) }}
+      </div>
+      <div class="flex-1">
+        <h1 class="text-4xl font-bold mb-2">{{ beneficiaire.prenom }} {{ beneficiaire.nom }}</h1>
+        <div class="flex items-center gap-4 text-lg text-blue-100 mb-4">
+          <span>📧 {{ beneficiaire.email }}</span>
+          <span>📞 {{ beneficiaire.telephone }}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span [class]="getStatusColor(beneficiaire.statut)" class="px-4 py-2 rounded-full text-sm font-semibold">
+            {{ beneficiaire.statut }}
+          </span>
+          <span class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold">
+            {{ beneficiaire.genre }}
+          </span>
+          <span class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold">
+            {{ calculateAge(beneficiaire.dateNaissance) }} ans
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2">{{ stats.activitesTerminees }}</div>
+      <div class="text-blue-100">Activités terminées</div>
+    </div>
+    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2">{{ stats.coachingsRealises }}</div>
+      <div class="text-purple-100">Sessions coaching</div>
+    </div>
+    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2">{{ stats.progression }}%</div>
+      <div class="text-green-100">Progression globale</div>
+    </div>
+    <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2">{{ stats.score }}</div>
+      <div class="text-amber-100">Score total</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Informations personnelles -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <span>👤</span> Informations personnelles
+      </h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Date de naissance</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.dateNaissance | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Âge</span>
+          <span class="text-gray-900 font-semibold">{{ calculateAge(beneficiaire.dateNaissance) }} ans</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Genre</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.genre }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Téléphone</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.telephone }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3">
+          <span class="text-gray-600 font-medium">Email</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Localisation -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <span>📍</span> Localisation
+      </h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Adresse</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.adresse }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Ville</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.ville }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Région</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.region }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3">
+          <span class="text-gray-600 font-medium">Zone</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.zone }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formation et programme -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <span>📚</span> Formation et programme
+      </h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Niveau d'éducation</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.niveauEducation }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Situation professionnelle</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.situationProfessionnelle }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Programme</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.programme }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3">
+          <span class="text-gray-600 font-medium">Bailleur</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.bailleur }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informations du compte -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <span>ℹ️</span> Informations du compte
+      </h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Date d'inscription</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.dateInscription | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b border-gray-100">
+          <span class="text-gray-600 font-medium">Statut du compte</span>
+          <span [class]="getStatusColor(beneficiaire.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+            {{ beneficiaire.statut }}
+          </span>
+        </div>
+        <div class="flex justify-between items-center py-3">
+          <span class="text-gray-600 font-medium">ID Coach</span>
+          <span class="text-gray-900 font-semibold">{{ beneficiaire.coachId || 'Non assigné' }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Activités récentes -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <span>🎯</span> Activités récentes
+    </h2>
+    <div class="space-y-4">
+      <div 
+        *ngFor="let activite of activites"
+        class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100 hover:shadow-md transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-bold text-gray-900 text-lg">{{ activite.titre }}</h3>
+            <p class="text-sm text-gray-600">{{ activite.type }} • {{ activite.date | date: 'dd/MM/yyyy' }}</p>
+          </div>
+          <span [class]="getStatusColor(activite.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+            {{ activite.statut }}
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+              [style.width.%]="activite.progression">
+            </div>
+          </div>
+          <span class="text-sm font-bold text-gray-700">{{ activite.progression }}%</span>
+        </div>
+      </div>
+      <div *ngIf="activites.length === 0" class="text-center py-8 text-gray-500">
+        Aucune activité enregistrée
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions de coaching -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <span>👨‍🏫</span> Sessions de coaching
+    </h2>
+    <div class="space-y-4">
+      <div 
+        *ngFor="let coaching of coachings"
+        class="p-4 rounded-xl bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-100 hover:shadow-md transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <h3 class="font-bold text-gray-900 text-lg mb-1">{{ coaching.objectif }}</h3>
+            <p class="text-sm text-gray-600 mb-2">👨‍🏫 {{ coaching.coach }} • 📅 {{ coaching.date | date: 'dd/MM/yyyy' }}</p>
+          </div>
+          <span [class]="getStatusColor(coaching.statut)" class="px-3 py-1 rounded-full text-xs font-semibold border-2">
+            {{ coaching.statut }}
+          </span>
+        </div>
+      </div>
+      <div *ngIf="coachings.length === 0" class="text-center py-8 text-gray-500">
+        Aucune session de coaching enregistrée
+      </div>
+    </div>
+  </div>
+
+</div>
